@@ -1,7 +1,9 @@
 import pygame
 import pygame.image
+from pygame import mixer
 from figher import Fighter
 
+mixer.init()
 pygame.init()
 
 #cria janela
@@ -37,6 +39,15 @@ WIZARD_SIZE = 250
 WIZARD_SCALE = 3
 WIZARD_OFFSET = [112, 107]
 WIZARD_DATA = [WIZARD_SIZE, WIZARD_SCALE, WIZARD_OFFSET]
+
+#carrega as musicas e sons
+pygame.mixer.music.load("assets/audio/WhatsApp-Audio-2025-05-29-at-15.05.08.mp3")
+pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.play(-1, 0.0, 5000)
+sword_fx = pygame.mixer.Sound("assets/audio/sword.wav")
+sword_fx.set_volume(0.1)
+magic_fx = pygame.mixer.Sound("assets/audio/magic.wav")
+magic_fx.set_volume(0.25)
 
 #carrega imagem de fundo
 background = pygame.image.load("assets/imagens/Background/background1.jpeg").convert_alpha()
@@ -74,8 +85,8 @@ def draw_health_bar(health, x, y):
     pygame.draw.rect(screen, YELLOW, (x, y, 400 * ratio, 30))
 
 #cria instâncias de jogador
-player_1 = Fighter(1, 200, 380, False, WARRIOR_DATA, warrior_sheet, WARRIOR_ANIMATIONS_STEPS) #posição x e y, para aparecer na tela
-player_2 = Fighter(2, 700, 380, True, WIZARD_DATA, wizard_sheet, WIZARD_ANIMATIONS_STEPS)
+player_1 = Fighter(1, 200, 380, False, WARRIOR_DATA, warrior_sheet, WARRIOR_ANIMATIONS_STEPS, sword_fx) #posição x e y, para aparecer na tela
+player_2 = Fighter(2, 700, 380, True, WIZARD_DATA, wizard_sheet, WIZARD_ANIMATIONS_STEPS, magic_fx)
 
 #loop para manter a janela aberta
 run = True  
@@ -130,8 +141,8 @@ while run:
         if pygame.time.get_ticks() - round_over_time > ROUND_OVER_COOLDOWN:
             round_over = False
             intro_count = 3
-            player_1 = Fighter(1, 200, 380, False, WARRIOR_DATA, warrior_sheet, WARRIOR_ANIMATIONS_STEPS)
-            player_2 = Fighter(2, 700, 380, True, WIZARD_DATA, wizard_sheet, WIZARD_ANIMATIONS_STEPS)
+            player_1 = Fighter(1, 200, 380, False, WARRIOR_DATA, warrior_sheet, WARRIOR_ANIMATIONS_STEPS, sword_fx)
+            player_2 = Fighter(2, 700, 380, True, WIZARD_DATA, wizard_sheet, WIZARD_ANIMATIONS_STEPS, magic_fx)
       
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
