@@ -48,12 +48,11 @@ class Fighter:
         return animation_list
 
     def move(self, screen_width, screen_height, target, round_over):
-        SPEED = 5
+        SPEED = 7
         GRAVITY = 2
         dx = 0
         dy = 0
         self.running = False
-        self.attack_type = 0
 
         # Entrada do teclado
         key = pygame.key.get_pressed()
@@ -116,7 +115,7 @@ class Fighter:
             self.update_action(IDLE)
 
         # Troca o frame da animação atual com base no tempo
-        animation_cooldown = 50
+        animation_cooldown = 27
         self.image = self.animation_list[self.action][self.frame_index]
         if pygame.time.get_ticks() - self.update_time > animation_cooldown:
             self.frame_index += 1
