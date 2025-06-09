@@ -1,30 +1,26 @@
-# ... (arquivos anteriores comentados aqui)
-
-
 # fighter.py - Classe que representa os personagens jogáveis (lutadores)
 import pygame
 from utils.constants import *  # Importa constantes como IDLE, ATTACK1, etc.
 
+BLOCK = 7  # Nova ação
+
 class Fighter:
     def __init__(self, player, x, y, flip, data, sprite_sheet, animation_steps, sound):
-        self.player = player  # Identificador do jogador (1 ou 2)
-        self.size = data[0]  # Tamanho do sprite original
-        self.image_scale = data[1]  # Fator de escala da imagem
-        self.offset = data[2]  # Ajuste de posição para o desenho
-        self.flip = flip  # Se o sprite deve ser espelhado
+        self.player = player
+        self.size = data[0]
+        self.image_scale = data[1]
+        self.offset = data[2]
+        self.flip = flip
 
-        # Lista de animações por ação
         self.animation_list = self.load_images(sprite_sheet, animation_steps)
 
-        # Estado inicial do personagem
         self.action = IDLE
         self.frame_index = 0
         self.image = self.animation_list[self.action][self.frame_index]
         self.update_time = pygame.time.get_ticks()
 
-        # Rect para colisões e movimentação
         self.rect = pygame.Rect((x, y, 80, 180))
-        self.vel_y = 0  # Velocidade vertical
+        self.vel_y = 0
         self.running = False
         self.jump = False
         self.attacking = False
@@ -35,8 +31,15 @@ class Fighter:
         self.health = 100
         self.alive = True
 
+        # Novos atributos para combo e bloqueio
+        self.combo_counter = 0
+        self.timer_combo = 0 # Tempo para fazer combo novamente
+        self.timer_ragdoll = 0 # Tempo para se levantar denovo
+        self.last_hit_time = 0
+        self.combo_timeout = 1000
+        self.blocking = False
+
     def load_images(self, sprite_sheet, animation_steps):
-        # Carrega os frames de animação a partir da sprite sheet
         animation_list = []
         for y, animation in enumerate(animation_steps):
             temp_img_list = []
@@ -54,31 +57,28 @@ class Fighter:
         dy = 0
         self.running = False
 
-        # Entrada do teclado
         key = pygame.key.get_pressed()
         if not self.attacking and self.alive and not round_over:
             if self.player == 1:
-                # Movimento do jogador 1
                 if key[pygame.K_a]: dx = -SPEED; self.running = True
                 if key[pygame.K_d]: dx = SPEED; self.running = True
                 if key[pygame.K_w] and not self.jump: self.vel_y = -30; self.jump = True
+                self.blocking = key[pygame.K_e]
                 if key[pygame.K_r] or key[pygame.K_t]:
                     self.attack(target)
                     self.attack_type = 1 if key[pygame.K_r] else 2
             elif self.player == 2:
-                # Movimento do jogador 2
                 if key[pygame.K_b]: dx = -SPEED; self.running = True
                 if key[pygame.K_m]: dx = SPEED; self.running = True
                 if key[pygame.K_SPACE] and not self.jump: self.vel_y = -30; self.jump = True
+                self.blocking = key[pygame.K_l]
                 if key[pygame.K_o] or key[pygame.K_p]:
                     self.attack(target)
                     self.attack_type = 1 if key[pygame.K_o] else 2
 
-        # Gravidade
         self.vel_y += GRAVITY
         dy += self.vel_y
 
-        # Limites da tela
         if self.rect.left + dx < 0: dx = 0 - self.rect.left
         if self.rect.right + dx > screen_width: dx = screen_width - self.rect.right
         if self.rect.bottom + dy > screen_height - 40:
@@ -86,19 +86,15 @@ class Fighter:
             self.jump = False
             dy = screen_height - 40 - self.rect.bottom
 
-        # Espelhamento baseado na posição do oponente
         self.flip = target.rect.centerx < self.rect.centerx
 
-        # Reduz cooldown do ataque
         if self.attack_cooldown > 0:
             self.attack_cooldown -= 1
 
-        # Atualiza posição
         self.rect.x += dx
         self.rect.y += dy
 
     def update(self):
-        # Atualiza estado do personagem com base na situação
         if self.health <= 0:
             self.health = 0
             self.alive = False
@@ -107,6 +103,8 @@ class Fighter:
             self.update_action(HIT)
         elif self.attacking:
             self.update_action(ATTACK1 if self.attack_type == 1 else ATTACK2)
+        elif self.blocking:
+            self.update_action(BLOCK)
         elif self.jump:
             self.update_action(JUMP)
         elif self.running:
@@ -114,14 +112,12 @@ class Fighter:
         else:
             self.update_action(IDLE)
 
-        # Troca o frame da animação atual com base no tempo
         animation_cooldown = 27
         self.image = self.animation_list[self.action][self.frame_index]
         if pygame.time.get_ticks() - self.update_time > animation_cooldown:
             self.frame_index += 1
             self.update_time = pygame.time.get_ticks()
 
-        # Reinicia animação quando necessário
         if self.frame_index >= len(self.animation_list[self.action]):
             self.frame_index = 0 if self.alive else len(self.animation_list[self.action]) - 1
             if self.action in (ATTACK1, ATTACK2):
@@ -133,7 +129,6 @@ class Fighter:
                 self.attack_cooldown = ATTACK_COOLDOWN
 
     def attack(self, target):
-        # Realiza ataque e verifica colisão
         if self.attack_cooldown == 0:
             self.attacking = True
             self.attack_sound.play()
@@ -141,18 +136,33 @@ class Fighter:
                 self.rect.centerx - (2 * self.rect.width * self.flip),
                 self.rect.y, 2 * self.rect.width, self.rect.height
             )
+            current_time = pygame.time.get_ticks()
+            if current_time - self.last_hit_time <= self.combo_timeout:
+                self.combo_counter += 1
+            else:
+                self.combo_counter = 1
+            self.last_hit_time = current_time
+
             if attacking_rect.colliderect(target.rect):
-                target.health -= 10
+                if target.blocking:
+                    damage = 3
+                else:
+                    damage = 10
+                target.health -= damage
                 target.hit = True
 
+                # Lançamento para trás no 4º hit do combo
+                if self.combo_counter == 4:
+                    knockback = -170 if not target.flip else 170
+                    target.rect.x += knockback
+                    self.combo_counter = 0  # reseta combo após o lançamento
+
     def update_action(self, new_action):
-        # Atualiza ação apenas se ela for diferente da atual
         if new_action != self.action:
             self.action = new_action
             self.frame_index = 0
             self.update_time = pygame.time.get_ticks()
 
     def draw(self, surface):
-        # Desenha o personagem na tela com o espelhamento correto
         img = pygame.transform.flip(self.image, self.flip, False)
         surface.blit(img, (self.rect.x - (self.offset[0] * self.image_scale), self.rect.y - (self.offset[1] * self.image_scale)))
