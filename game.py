@@ -91,8 +91,8 @@ class Game:
                         show_pause_menu(self.screen)  # <- chama o menu de pausa
 
             pygame.display.update()
-
         pygame.quit()
         self.stop_event.set()
         self.input_thread1.join()
         self.input_thread2.join()
+        pygame.quit()
