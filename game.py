@@ -88,7 +88,7 @@ class Game:
                     run = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        show_pause_menu(self.screen)  # <- chama o menu de pausa
+                        show_pause_menu(self.screen, self.stop_event, self.input_thread1, self.input_thread2)
 
             pygame.display.update()
         

@@ -33,7 +33,7 @@ class Button:
     def check_hover(self, pos):
         self.hovered = self.rect.collidepoint(pos)
 
-def show_pause_menu(screen):
+def show_pause_menu(screen, stop_event=None, input_thread1=None, input_thread2=None):
     clock = pygame.time.Clock()
     continue_btn = Button("Continuar", SCREEN_WIDTH//2 - 100, 250, 200, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
     quit_btn = Button("Sair", SCREEN_WIDTH//2 - 100, 350, 200, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
@@ -65,6 +65,9 @@ def show_pause_menu(screen):
                         if btn == continue_btn:
                             return  # continua o jogo
                         elif btn == quit_btn:
+                            if stop_event: stop_event.set()
+                            if input_thread1: input_thread1.join()
+                            if input_thread2: input_thread2.join()
                             pygame.quit()
                             exit()
                 for btn in [continue_btn, quit_btn]:
