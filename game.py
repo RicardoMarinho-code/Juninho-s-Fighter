@@ -3,7 +3,9 @@ import pygame
 from config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
 from ui import draw_background, draw_health_bar, draw_text
 from characters.fighter import Fighter
+from characters.input_thread import InputThread
 from utils.constants import *
+import threading
 
 class Game:
     def __init__(self, screen, assets):
@@ -30,6 +32,14 @@ class Game:
         # Inicia a música de fundo
         pygame.mixer.music.play(-1, 0.0, 5000)
 
+        self.cmd_p1 = {'left': False, 'right': False, 'jump': False, 'block': False, 'attack1': False, 'attack2': False}
+        self.cmd_p2 = {'left': False, 'right': False, 'jump': False, 'block': False, 'attack1': False, 'attack2': False}
+        self.stop_event = threading.Event()
+        self.input_thread1 = InputThread(1, self.cmd_p1, self.stop_event)
+        self.input_thread2 = InputThread(2, self.cmd_p2, self.stop_event)
+        self.input_thread1.start()
+        self.input_thread2.start()
+
     def run(self):
         run = True
         while run:
@@ -44,8 +54,8 @@ class Game:
 
             # Contagem regressiva antes da luta
             if self.intro_count <= 0:
-                self.player_1.move(SCREEN_WIDTH, SCREEN_HEIGHT, self.player_2, self.round_over)
-                self.player_2.move(SCREEN_WIDTH, SCREEN_HEIGHT, self.player_1, self.round_over)
+                self.player_1.move(SCREEN_WIDTH, SCREEN_HEIGHT, self.player_2, self.round_over, self.cmd_p1)
+                self.player_2.move(SCREEN_WIDTH, SCREEN_HEIGHT, self.player_1, self.round_over, self.cmd_p2)
             else:
                 draw_text(str(self.intro_count), self.assets['count_font'], (255, 0, 0), SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3, self.screen)
                 if (pygame.time.get_ticks() - self.last_count_update) >= 1000:
@@ -84,3 +94,6 @@ class Game:
 
             pygame.display.update()
         pygame.quit()
+        self.stop_event.set()
+        self.input_thread1.join()
+        self.input_thread2.join()

@@ -50,31 +50,21 @@ class Fighter:
             animation_list.append(temp_img_list)
         return animation_list
 
-    def move(self, screen_width, screen_height, target, round_over):
+    def move(self, screen_width, screen_height, target, round_over, commands):
         SPEED = 7
         GRAVITY = 2
         dx = 0
         dy = 0
         self.running = False
 
-        key = pygame.key.get_pressed()
         if not self.attacking and self.alive and not round_over:
-            if self.player == 1:
-                if key[pygame.K_a]: dx = -SPEED; self.running = True
-                if key[pygame.K_d]: dx = SPEED; self.running = True
-                if key[pygame.K_w] and not self.jump: self.vel_y = -30; self.jump = True
-                self.blocking = key[pygame.K_e]
-                if key[pygame.K_r] or key[pygame.K_t]:
-                    self.attack(target)
-                    self.attack_type = 1 if key[pygame.K_r] else 2
-            elif self.player == 2:
-                if key[pygame.K_b]: dx = -SPEED; self.running = True
-                if key[pygame.K_m]: dx = SPEED; self.running = True
-                if key[pygame.K_SPACE] and not self.jump: self.vel_y = -30; self.jump = True
-                self.blocking = key[pygame.K_l]
-                if key[pygame.K_o] or key[pygame.K_p]:
-                    self.attack(target)
-                    self.attack_type = 1 if key[pygame.K_o] else 2
+            if commands['left']: dx = -SPEED; self.running = True
+            if commands['right']: dx = SPEED; self.running = True
+            if commands['jump'] and not self.jump: self.vel_y = -30; self.jump = True
+            self.blocking = commands['block']
+            if commands['attack1'] or commands['attack2']:
+                self.attack(target)
+                self.attack_type = 1 if commands['attack1'] else 2
 
         self.vel_y += GRAVITY
         dy += self.vel_y
