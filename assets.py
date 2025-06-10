@@ -10,7 +10,7 @@ def load_assets():
 
         # Carrega música de fundo e define o volume
         # Corrija o nome do arquivo de música:
-        pygame.mixer.music.load("assets/audio\WhatsApp-Audio-2025-05-29-at-15.05.08.mp3")
+        pygame.mixer.music.load("assets/audio/WhatsApp-Audio-2025-05-29-at-15.05.08.mp3")
         pygame.mixer.music.set_volume(0.1)
 
         # Carrega efeitos sonoros
