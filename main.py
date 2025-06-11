@@ -13,7 +13,10 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Juninho's Fighter")
 
 # Exibe o menu inicial e só continua se o jogador clicar em "Jogar"
-if show_menu(screen):
+while True:
+    if not show_menu(screen):
+        break
+
     assets = {}
 
     # Função para carregar os assets em uma thread separada
@@ -44,7 +47,31 @@ if show_menu(screen):
                 pygame.quit()
                 exit()
 
-    # Cria a instância do jogo passando a tela e os assets carregados
-    game = Game(screen, assets)
-    # Inicia o loop principal do jogo
-    game.run()
+    # Sistema de melhor de três
+    score = [0, 0]
+    vencedor = None
+    while True:
+        # Cria a instância do jogo passando a tela, os assets e o placar atual
+        game = Game(screen, assets, score)
+        game.run()
+        score = game.score
+        # Verifica se alguém venceu 2 rounds
+        if score[0] == 2 or score[1] == 2:
+            vencedor = "Jogador 1" if score[0] == 2 else "Jogador 2"
+            break
+
+    # Exibe tela de vitória final e espera ENTER
+    waiting = True
+    while waiting:
+        screen.fill((0, 0, 0))
+        win_text = font.render(f"{vencedor} venceu!", True, (255, 255, 0))
+        info_text = font.render("Pressione ENTER para voltar ao menu", True, (255, 255, 255))
+        screen.blit(win_text, (SCREEN_WIDTH // 2 - win_text.get_width() // 2, SCREEN_HEIGHT // 2 - win_text.get_height()))
+        screen.blit(info_text, (SCREEN_WIDTH // 2 - info_text.get_width() // 2, SCREEN_HEIGHT // 2 + 20))
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                waiting = False

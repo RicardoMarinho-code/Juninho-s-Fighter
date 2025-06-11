@@ -9,10 +9,10 @@ from pause_menu import show_pause_menu  # <- menu de pausa
 import threading
 
 class Game:
-    def __init__(self, screen, assets):
+    def __init__(self, screen, assets, score):
         self.screen = screen
         self.clock = pygame.time.Clock()
-        self.score = [0, 0]  # Pontuação dos jogadores
+        self.score = score  # Usa o placar passado pelo main.py
         self.round_over = False
         self.round_over_time = 0
         self.intro_count = 3  # Contagem regressiva antes do round
@@ -76,7 +76,7 @@ class Game:
             self.player_1.draw(self.screen)
             self.player_2.draw(self.screen)
 
-            # Verifica fim de round
+            # Verifica fim de round e atualiza placar
             if not self.round_over:
                 if not self.player_1.alive:
                     self.score[1] += 1
@@ -97,6 +97,9 @@ class Game:
                     self.player_2 = Fighter(2, 700, 380, True, self.WIZARD_DATA,
                                             self.assets['wizard_sheet'], self.WIZARD_ANIM, self.assets['magic_fx'])
 
+            # --- ADICIONE ESTA VERIFICAÇÃO ---
+            if self.score[0] == 2 or self.score[1] == 2:
+                run = False
             # Trata eventos do sistema e pausa
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -107,8 +110,8 @@ class Game:
 
             pygame.display.update()
         
-        # Finaliza as threads de input e encerra o pygame ao sair do loop
+        # Finaliza as threads de input ao sair do loop
         self.stop_event.set()
         self.input_thread1.join()
         self.input_thread2.join()
-        pygame.quit()
+        # NÃO chame pygame.quit() aqui!

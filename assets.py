@@ -11,13 +11,13 @@ def load_assets():
         # Carrega música de fundo e define o volume
         # Corrija o nome do arquivo de música:
         pygame.mixer.music.load("assets/audio/WhatsApp-Audio-2025-05-29-at-15.05.08.mp3")
-        pygame.mixer.music.set_volume(0.1)
+        pygame.mixer.music.set_volume(0.01)
 
         # Carrega efeitos sonoros
         sword_fx = pygame.mixer.Sound("assets/audio/sword.wav")
-        sword_fx.set_volume(0.1)
+        sword_fx.set_volume(0.01)
         magic_fx = pygame.mixer.Sound("assets/audio/magic.wav")
-        magic_fx.set_volume(0.25)
+        magic_fx.set_volume(0.01)# aumenta o volume do efeito sonoro de magia depois de testar
 
         # Carrega imagens com transparência (convert_alpha)
         # Só pode ser feito depois de iniciar a janela do Pygame
