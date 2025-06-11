@@ -154,9 +154,18 @@ def show_menu(screen):
                 for name, btn in buttons.items():
                     if btn.pressed and btn.hovered:
                         if name == "jogar":
-                            return "jogar"
+                            # Jogador 1 escolhe
+                            from character_select import selecionar_personagem
+                            p1 = selecionar_personagem(screen, "Jogador 1: Selecione seu personagem")
+                            # Jogador 2 escolhe
+                            p2 = selecionar_personagem(screen, "Jogador 2: Selecione seu personagem")
+                            # Você pode passar p1 e p2 para o jogo depois
+                            return ("jogar", p1, p2)
                         elif name == "campanha":
-                            return "campanha"
+                            from character_select import selecionar_personagem
+                            p1 = selecionar_personagem(screen, "Selecione seu personagem")
+                            # Só um jogador escolhe, o outro pode ser um padrão ou bot
+                            return ("campanha", p1)
                         elif name == "opcoes":
                             show_options_menu(screen)
                         elif name == "sair":

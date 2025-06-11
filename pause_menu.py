@@ -74,17 +74,10 @@ def show_pause_menu(screen, stop_event=None, input_thread1=None, input_thread2=N
                         if btn == continue_btn:
                             return "continue"
                         elif btn == menu_btn:
-                            if stop_event: stop_event.set()
-                            if input_thread1: input_thread1.join()
-                            if input_thread2: input_thread2.join()
                             return "menu"
                         elif btn == quit_btn:
-                            if stop_event: stop_event.set()
-                            if input_thread1: input_thread1.join()
-                            if input_thread2: input_thread2.join()
                             pygame.quit()
                             sys.exit()
-                for btn in [continue_btn, menu_btn, quit_btn]:
                     btn.pressed = False
 
         pygame.display.flip()

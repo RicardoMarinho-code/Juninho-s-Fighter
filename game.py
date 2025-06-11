@@ -7,9 +7,10 @@ from characters.input_thread import *
 from utils.constants import *
 from pause_menu import show_pause_menu  # <- menu de pausa
 import threading
+import sys
 
 class Game:
-    def __init__(self, screen, assets, score):
+    def __init__(self, screen, assets, score, p1="warrior", p2="wizard", modo="jogar"):
         self.screen = screen
         self.clock = pygame.time.Clock()
         self.score = score  # Usa o placar passado pelo main.py
@@ -27,9 +28,17 @@ class Game:
         self.WARRIOR_ANIM = [10, 8, 1, 7, 7, 3, 7]
         self.WIZARD_ANIM = [8, 8, 1, 8, 8, 3, 7]
 
-        # Cria os personagens
-        self.player_1 = Fighter(1, 200, 380, False, self.WARRIOR_DATA, assets['warrior_sheet'], self.WARRIOR_ANIM, assets['sword_fx'])
-        self.player_2 = Fighter(2, 700, 380, True, self.WIZARD_DATA, assets['wizard_sheet'], self.WIZARD_ANIM, assets['magic_fx'])
+        self.p1_name = p1
+        self.p2_name = p2
+        self.create_fighter = lambda player, char_name, x, y, flip: (
+            Fighter(player, x, y, flip, self.WARRIOR_DATA, assets['warrior_sheet'], self.WARRIOR_ANIM, assets['sword_fx'])
+            if char_name == "warrior" else
+            Fighter(player, x, y, flip, self.WIZARD_DATA, assets['wizard_sheet'], self.WIZARD_ANIM, assets['magic_fx'])
+        )
+
+        # P1 sempre à esquerda, P2 à direita
+        self.player_1 = self.create_fighter(1, self.p1_name, 200, 380, False)  # P1 sempre à esquerda
+        self.player_2 = self.create_fighter(2, self.p2_name, 700, 380, True)   # P2 sempre à direita
 
         # Inicia a música de fundo
         pygame.mixer.music.play(-1, 0.0, 5000)
@@ -92,10 +101,8 @@ class Game:
                 if pygame.time.get_ticks() - self.round_over_time > ROUND_OVER_COOLDOWN:
                     self.round_over = False
                     self.intro_count = 3
-                    self.player_1 = Fighter(1, 200, 380, False, self.WARRIOR_DATA,
-                                            self.assets['warrior_sheet'], self.WARRIOR_ANIM, self.assets['sword_fx'])
-                    self.player_2 = Fighter(2, 700, 380, True, self.WIZARD_DATA,
-                                            self.assets['wizard_sheet'], self.WIZARD_ANIM, self.assets['magic_fx'])
+                    self.player_1 = self.create_fighter(1, self.p1_name, 200, 380, False)
+                    self.player_2 = self.create_fighter(2, self.p2_name, 700, 380, True)
 
             # --- ADICIONE ESTA VERIFICAÇÃO ---
             if self.score[0] == 2 or self.score[1] == 2:
@@ -103,10 +110,13 @@ class Game:
             # Trata eventos do sistema e pausa
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    run = False
+                    pygame.quit()
+                    sys.exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        show_pause_menu(self.screen, self.stop_event, self.input_thread1, self.input_thread2)
+                        pause_result = show_pause_menu(self.screen)
+                        if pause_result == "menu":
+                            return "menu"
 
             pygame.display.update()
         

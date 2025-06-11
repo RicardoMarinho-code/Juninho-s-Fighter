@@ -14,8 +14,18 @@ pygame.display.set_caption("Juninho's Fighter")
 
 # Exibe o menu inicial e só continua se o jogador clicar em "Jogar"
 while True:
-    if not show_menu(screen):
+    menu_result = show_menu(screen)
+    if not menu_result:
         break
+
+    if isinstance(menu_result, tuple):
+        modo = menu_result[0]
+        if modo == "jogar":
+            p1, p2 = menu_result[1], menu_result[2]
+            # Passe p1 e p2 para o Game, ou guarde para usar depois
+        elif modo == "campanha":
+            p1 = menu_result[1]
+            # Passe p1 para o modo campanha
 
     assets = {}
 
@@ -50,12 +60,18 @@ while True:
     # Sistema de melhor de três
     score = [0, 0]
     vencedor = None
+    # p1 e p2 já foram definidos pelo menu, não altere eles aqui!
     while True:
-        # Cria a instância do jogo passando a tela, os assets e o placar atual
-        game = Game(screen, assets, score)
-        game.run()
+        if modo == "jogar":
+            game = Game(screen, assets, score, p1, p2, modo)
+        elif modo == "campanha":
+            game = Game(screen, assets, score, p1, "wizard", modo)
+        else:
+            game = Game(screen, assets, score)
+        resultado = game.run()
+        if resultado == "menu":
+            break
         score = game.score
-        # Verifica se alguém venceu 2 rounds
         if score[0] == 2 or score[1] == 2:
             vencedor = "Jogador 1" if score[0] == 2 else "Jogador 2"
             break
