@@ -43,9 +43,9 @@ class Button:
 def show_pause_menu(screen, stop_event=None, input_thread1=None, input_thread2=None):
     clock = pygame.time.Clock()
 
-    continue_btn = Button("Continuar", SCREEN_WIDTH//2 - 100, 220, 240, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
-    menu_btn = Button("Menu Principal", SCREEN_WIDTH//2 - 100, 300, 240, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
-    quit_btn = Button("Sair", SCREEN_WIDTH//2 - 100, 380, 240, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
+    continue_btn = Button("Continuar", SCREEN_WIDTH//2 - 100, 240, 240, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
+    menu_btn = Button("Menu Principal", SCREEN_WIDTH//2 - 100, 320, 240, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
+    # Removido o quit_btn
 
     while True:
         screen.fill(GRAY)
@@ -55,29 +55,26 @@ def show_pause_menu(screen, stop_event=None, input_thread1=None, input_thread2=N
         title_surf = title_font.render("PAUSADO", True, WHITE)
         screen.blit(title_surf, title_surf.get_rect(center=(SCREEN_WIDTH // 2, 140)))
 
-        # Botões
-        for btn in [continue_btn, menu_btn, quit_btn]:
+        # Botões (apenas continuar e menu)
+        for btn in [continue_btn, menu_btn]:
             btn.check_hover(mouse_pos)
             btn.draw(screen)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                # Apenas retorna para o menu principal, não fecha o jogo aqui
+                return "menu"
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                for btn in [continue_btn, menu_btn, quit_btn]:
+                for btn in [continue_btn, menu_btn]:
                     if btn.hovered:
                         btn.pressed = True
             elif event.type == pygame.MOUSEBUTTONUP:
-                for btn in [continue_btn, menu_btn, quit_btn]:
+                for btn in [continue_btn, menu_btn]:
                     if btn.pressed and btn.hovered:
                         if btn == continue_btn:
                             return "continue"
                         elif btn == menu_btn:
                             return "menu"
-                        elif btn == quit_btn:
-                            pygame.quit()
-                            sys.exit()
                     btn.pressed = False
 
         pygame.display.flip()
