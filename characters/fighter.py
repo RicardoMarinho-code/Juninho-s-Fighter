@@ -2,23 +2,27 @@
 import pygame
 from utils.constants import *  # Importa constantes como IDLE, ATTACK1, etc.
 
-BLOCK = 7  # Nova ação
+BLOCK = 7  # Nova ação (bloqueio)
 
 class Fighter:
     def __init__(self, player, x, y, flip, data, sprite_sheet, animation_steps, sound):
+        # Inicializa atributos do personagem
         self.player = player
         self.size = data[0]
         self.image_scale = data[1]
         self.offset = data[2]
         self.flip = flip
 
+        # Carrega as animações do personagem
         self.animation_list = self.load_images(sprite_sheet, animation_steps)
 
+        # Estado inicial do personagem
         self.action = IDLE
         self.frame_index = 0
         self.image = self.animation_list[self.action][self.frame_index]
         self.update_time = pygame.time.get_ticks()
 
+        # Posição e física
         self.rect = pygame.Rect((x, y, 80, 180))
         self.vel_y = 0
         self.running = False
@@ -39,6 +43,7 @@ class Fighter:
         self.combo_timeout = 1000
         self.blocking = False
 
+    # Carrega as imagens das animações a partir do sprite sheet
     def load_images(self, sprite_sheet, animation_steps):
         animation_list = []
         for y, animation in enumerate(animation_steps):
@@ -50,6 +55,7 @@ class Fighter:
             animation_list.append(temp_img_list)
         return animation_list
 
+    # Atualiza a posição e estado do personagem conforme comandos e física
     def move(self, screen_width, screen_height, target, round_over, commands):
         SPEED = 7
         GRAVITY = 2
@@ -57,6 +63,7 @@ class Fighter:
         dy = 0
         self.running = False
 
+        # Só permite movimento se não estiver atacando, estiver vivo e o round não acabou
         if not self.attacking and self.alive and not round_over:
             if commands['left']: dx = -SPEED; self.running = True
             if commands['right']: dx = SPEED; self.running = True
@@ -69,6 +76,7 @@ class Fighter:
         self.vel_y += GRAVITY
         dy += self.vel_y
 
+        # Limita o personagem dentro da tela
         if self.rect.left + dx < 0: dx = 0 - self.rect.left
         if self.rect.right + dx > screen_width: dx = screen_width - self.rect.right
         if self.rect.bottom + dy > screen_height - 40:
@@ -76,14 +84,18 @@ class Fighter:
             self.jump = False
             dy = screen_height - 40 - self.rect.bottom
 
+        # Vira o personagem para o oponente
         self.flip = target.rect.centerx < self.rect.centerx
 
+        # Reduz cooldown do ataque
         if self.attack_cooldown > 0:
             self.attack_cooldown -= 1
 
+        # Atualiza posição
         self.rect.x += dx
         self.rect.y += dy
 
+    # Atualiza o estado de animação do personagem
     def update(self):
         if self.health <= 0:
             self.health = 0
@@ -118,6 +130,7 @@ class Fighter:
                 self.attacking = False
                 self.attack_cooldown = ATTACK_COOLDOWN
 
+    # Realiza o ataque no oponente
     def attack(self, target):
         if self.attack_cooldown == 0:
             self.attacking = True
@@ -127,12 +140,14 @@ class Fighter:
                 self.rect.y, 2 * self.rect.width, self.rect.height
             )
             current_time = pygame.time.get_ticks()
+            # Lógica de combo: se atacar rápido, aumenta o contador
             if current_time - self.last_hit_time <= self.combo_timeout:
                 self.combo_counter += 1
             else:
                 self.combo_counter = 1
             self.last_hit_time = current_time
 
+            # Se acertar o oponente
             if attacking_rect.colliderect(target.rect):
                 if target.blocking:
                     damage = 3
@@ -147,12 +162,14 @@ class Fighter:
                     target.rect.x += knockback
                     self.combo_counter = 0  # reseta combo após o lançamento
 
+    # Atualiza a ação de animação
     def update_action(self, new_action):
         if new_action != self.action:
             self.action = new_action
             self.frame_index = 0
             self.update_time = pygame.time.get_ticks()
 
+    # Desenha o personagem na tela
     def draw(self, surface):
         img = pygame.transform.flip(self.image, self.flip, False)
         surface.blit(img, (self.rect.x - (self.offset[0] * self.image_scale), self.rect.y - (self.offset[1] * self.image_scale)))
