@@ -59,7 +59,8 @@ while True:
     # Sistema de melhor de três
     score = [0, 0]
     vencedor = None
-    # p1 e p2 já foram definidos pelo menu, não altere eles aqui!
+    game = None  # Adicione esta linha para manter referência ao último game criado
+
     while True:
         if modo == "jogar":
             game = Game(screen, assets, score, p1, p2, modo)
@@ -69,10 +70,20 @@ while True:
             game = Game(screen, assets, score)
         resultado = game.run()
         if resultado == "menu":
+            # Finaliza as threads antes de voltar ao menu
+            if game:
+                game.stop_event.set()
+                game.input_thread1.join()
+                game.input_thread2.join()
             break
         score = game.score
         if score[0] == 2 or score[1] == 2:
             vencedor = "Jogador 1" if score[0] == 2 else "Jogador 2"
+            # Finaliza as threads antes de mostrar a tela de vitória
+            if game:
+                game.stop_event.set()
+                game.input_thread1.join()
+                game.input_thread2.join()
             break
 
     # Exibe tela de vitória final e espera ENTER
@@ -86,6 +97,11 @@ while True:
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                # Finaliza as threads antes de sair do programa
+                if game:
+                    game.stop_event.set()
+                    game.input_thread1.join()
+                    game.input_thread2.join()
                 pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:

@@ -28,8 +28,8 @@ def show_pause_menu(screen, stop_event=None, input_thread1=None, input_thread2=N
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                # Apenas retorna para o menu principal, não fecha o jogo aqui
+                return "menu"
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 for btn in buttons:
                     if btn.hovered:
