@@ -2,61 +2,27 @@
 import pygame
 import sys
 from config import SCREEN_WIDTH, SCREEN_HEIGHT
-from menu import show_menu  # Importa o menu principal
+from ui_components import (
+    Button, BUTTON_FONT, TITLE_FONT, WHITE, GRAY, BLUE, LIGHT_BLUE, DARK_BLUE
+)
+from opcoes_menu import show_opcoes_menu
 
-# Cores
-WHITE = (255, 255, 255)
-GRAY = (50, 50, 50)
-BLUE = (0, 150, 255)
-LIGHT_BLUE = (100, 200, 255)
-DARK_BLUE = (0, 100, 200)
-
-# Fonte
-pygame.font.init()
-try:
-    button_font = pygame.font.Font("assets/font/turok.ttf", 48)
-    title_font = pygame.font.Font("assets/font/turok.ttf", 60)
-except:
-    button_font = pygame.font.SysFont('Arial', 48)
-    title_font = pygame.font.SysFont('Arial', 60)
-
-class Button:
-    def __init__(self, text, x, y, width, height, color, hover_color, press_color):
-        self.text = text
-        self.rect = pygame.Rect(x, y, width, height)
-        self.color = color
-        self.hover_color = hover_color
-        self.press_color = press_color
-        self.hovered = False
-        self.pressed = False
-
-    def draw(self, surface):
-        color = self.press_color if self.pressed else (self.hover_color if self.hovered else self.color)
-        pygame.draw.rect(surface, color, self.rect, border_radius=10)
-        text_surf = button_font.render(self.text, True, WHITE)
-        text_rect = text_surf.get_rect(center=self.rect.center)
-        surface.blit(text_surf, text_rect)
-
-    def check_hover(self, pos):
-        self.hovered = self.rect.collidepoint(pos)
-
-def show_pause_menu(screen, stop_event=None, input_thread1=None, input_thread2=None):
+def show_pause_menu(screen, stop_event=None, input_thread1=None, input_thread2=None, volume=1.0):
     clock = pygame.time.Clock()
-
-    continue_btn = Button("Continuar", SCREEN_WIDTH//2 - 100, 220, 240, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
-    menu_btn = Button("Menu Principal", SCREEN_WIDTH//2 - 100, 300, 240, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
-    quit_btn = Button("Sair", SCREEN_WIDTH//2 - 100, 380, 240, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
+    continue_btn = Button("Continuar", SCREEN_WIDTH//2 - 120, 230, 240, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
+    opcoes_btn = Button("Opções", SCREEN_WIDTH//2 - 120, 310, 240, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
+    menu_btn = Button("Menu Principal", SCREEN_WIDTH//2 - 160, 390, 320, 60, BLUE, LIGHT_BLUE, DARK_BLUE)  # Botão maior!
+    buttons = [continue_btn, opcoes_btn, menu_btn]
 
     while True:
         screen.fill(GRAY)
         mouse_pos = pygame.mouse.get_pos()
 
         # Título
-        title_surf = title_font.render("PAUSADO", True, WHITE)
-        screen.blit(title_surf, title_surf.get_rect(center=(SCREEN_WIDTH // 2, 140)))
+        title_surf = TITLE_FONT.render("PAUSADO", True, WHITE)
+        screen.blit(title_surf, title_surf.get_rect(center=(SCREEN_WIDTH // 2, 160)))
 
-        # Botões
-        for btn in [continue_btn, menu_btn, quit_btn]:
+        for btn in buttons:
             btn.check_hover(mouse_pos)
             btn.draw(screen)
 
@@ -65,19 +31,18 @@ def show_pause_menu(screen, stop_event=None, input_thread1=None, input_thread2=N
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                for btn in [continue_btn, menu_btn, quit_btn]:
+                for btn in buttons:
                     if btn.hovered:
                         btn.pressed = True
             elif event.type == pygame.MOUSEBUTTONUP:
-                for btn in [continue_btn, menu_btn, quit_btn]:
+                for btn in buttons:
                     if btn.pressed and btn.hovered:
                         if btn == continue_btn:
-                            return "continue"
+                            return "continue", volume
+                        elif btn == opcoes_btn:
+                            volume = show_opcoes_menu(screen, volume)
                         elif btn == menu_btn:
-                            return "menu"
-                        elif btn == quit_btn:
-                            pygame.quit()
-                            sys.exit()
+                            return "menu", volume
                     btn.pressed = False
 
         pygame.display.flip()

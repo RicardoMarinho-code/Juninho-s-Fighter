@@ -10,11 +10,20 @@ def draw_text(text, font, color, x, y, surface):
 
 # Função para desenhar a barra de vida do jogador
 def draw_health_bar(health, x, y, surface):
-    # Desenha a barra de vida baseada na porcentagem de vida restante
-    ratio = health / 100
-    pygame.draw.rect(surface, WHITE, (x - 2, y - 2, 404, 34))  # Borda
-    pygame.draw.rect(surface, RED, (x, y, 400, 30))  # Barra cheia
-    pygame.draw.rect(surface, YELLOW, (x, y, 400 * ratio, 30))  # Barra atual
+    # Fundo preto com borda dourada
+    pygame.draw.rect(surface, (255,215,0), (x-4, y-4, 404, 34), border_radius=12)
+    pygame.draw.rect(surface, (30,30,30), (x, y, 396, 26), border_radius=10)
+    # Barra de vida (gradiente vermelho-amarelo)
+    ratio = max(0, health / 100)
+    bar_width = int(396 * ratio)
+    if bar_width > 0:
+        for i in range(bar_width):
+            color = (
+                255,
+                int(215 - 215 * (i/bar_width)),
+                0
+            )
+            pygame.draw.line(surface, color, (x+i, y), (x+i, y+26), 1)
 
 # Função para desenhar o fundo do jogo
 def draw_background(background, surface, width, height):

@@ -22,10 +22,9 @@ while True:
         modo = menu_result[0]
         if modo == "jogar":
             p1, p2 = menu_result[1], menu_result[2]
-            # Passe p1 e p2 para o Game, ou guarde para usar depois
         elif modo == "campanha":
             p1 = menu_result[1]
-            # Passe p1 para o modo campanha
+            p2 = "wizard"  # Oponente da primeira fase
 
     assets = {}
 
@@ -65,7 +64,7 @@ while True:
         if modo == "jogar":
             game = Game(screen, assets, score, p1, p2, modo)
         elif modo == "campanha":
-            game = Game(screen, assets, score, p1, "wizard", modo)
+            game = Game(screen, assets, score, p1, p2, modo)
         else:
             game = Game(screen, assets, score)
         resultado = game.run()

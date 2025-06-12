@@ -9,6 +9,16 @@ from pause_menu import show_pause_menu  # <- menu de pausa
 import threading
 import sys
 
+# Tenta carregar as fontes personalizadas, se não conseguir, usa as padrões do sistema
+try:
+    timer_font = pygame.font.Font("assets/font/turok.ttf", 54)
+    placar_font = pygame.font.Font("assets/font/turok.ttf", 36)
+    hud_font = pygame.font.Font("assets/font/turok.ttf", 32)
+except:
+    timer_font = pygame.font.SysFont('Arial', 54, bold=True)
+    placar_font = pygame.font.SysFont('Arial', 36, bold=True)
+    hud_font = pygame.font.SysFont('Arial', 32)
+
 class Game:
     def __init__(self, screen, assets, score, p1="warrior", p2="wizard", modo="jogar"):
         self.screen = screen
@@ -30,6 +40,7 @@ class Game:
 
         self.p1_name = p1
         self.p2_name = p2
+        self.modo = modo
         self.create_fighter = lambda player, char_name, x, y, flip: (
             Fighter(player, x, y, flip, self.WARRIOR_DATA, assets['warrior_sheet'], self.WARRIOR_ANIM, assets['sword_fx'])
             if char_name == "warrior" else
@@ -43,15 +54,21 @@ class Game:
         # Inicia a música de fundo
         pygame.mixer.music.play(-1, 0.0, 5000)
 
-        # Cria locks e eventos para controle de threads de input
+        # Threads de input só para o jogador 1 no modo campanha
         self.cmd_lock = threading.Lock()
         self.cmd_p1 = {'left': False, 'right': False, 'jump': False, 'block': False, 'attack1': False, 'attack2': False}
-        self.cmd_p2 = {'left': False, 'right': False, 'jump': False, 'block': False, 'attack1': False, 'attack2': False}
         self.stop_event = threading.Event()
         self.input_thread1 = InputThread(1, self.cmd_p1, self.stop_event, self.cmd_lock)
-        self.input_thread2 = InputThread(2, self.cmd_p2, self.stop_event, self.cmd_lock)
         self.input_thread1.start()
-        self.input_thread2.start()
+        if self.modo == "jogar":
+            self.cmd_p2 = {'left': False, 'right': False, 'jump': False, 'block': False, 'attack1': False, 'attack2': False}
+            self.input_thread2 = InputThread(2, self.cmd_p2, self.stop_event, self.cmd_lock)
+            self.input_thread2.start()
+        else:
+            self.cmd_p2 = None  # No bot
+
+        self.round_time = 99  # Tempo inicial do round em segundos
+        self.last_timer_update = pygame.time.get_ticks()
 
     # Loop principal do jogo
     def run(self):
@@ -61,23 +78,63 @@ class Game:
 
             # Desenha fundo, barras de vida e placar
             draw_background(self.assets['background_img'], self.screen, SCREEN_WIDTH, SCREEN_HEIGHT)
+            # Barra de vida do P1 (esquerda)
             draw_health_bar(self.player_1.health, 20, 20, self.screen)
-            draw_health_bar(self.player_2.health, 580, 20, self.screen)
-            draw_text("P1: " + str(self.score[0]), self.assets['score_font'], (255, 0, 0), 20, 60, self.screen)
-            draw_text("P2: " + str(self.score[1]), self.assets['score_font'], (255, 0, 0), 580, 60, self.screen)
+            # Barra de vida do P2 (direita)
+            draw_health_bar(self.player_2.health, SCREEN_WIDTH - 416, 20, self.screen)
+
+            # Nomes dos jogadores
+            if self.modo == "campanha":
+                p1_nome = "Jogador 1"
+                p2_nome = "Mago"  # Ou outro nome do oponente da fase
+            else:
+                p1_nome = "Jogador 1"
+                p2_nome = "Jogador 2"
+
+            p1_label = hud_font.render(p1_nome, True, (255,0,0))
+            p2_label = hud_font.render(p2_nome, True, (0,0,255))
+            self.screen.blit(p1_label, (30, 60))
+            self.screen.blit(p2_label, (SCREEN_WIDTH - p2_label.get_width() - 30, 60))
+
+            # Tempo centralizado entre as barras
+            tempo_text = timer_font.render(str(self.round_time), True, (255, 215, 0))
+            tempo_rect = tempo_text.get_rect(center=(SCREEN_WIDTH // 2, 40))
+            self.screen.blit(tempo_text, tempo_rect)
+
+            # Placar centralizado abaixo do tempo
+            placar_text = placar_font.render(f"{self.score[0]}  -  {self.score[1]}", True, (255,255,255))
+            placar_rect = placar_text.get_rect(center=(SCREEN_WIDTH // 2, 80))
+            self.screen.blit(placar_text, placar_rect)
 
             # Se a contagem regressiva acabou, permite movimento dos jogadores
             if self.intro_count <= 0:
                 with self.cmd_lock:
                     self.player_1.move(SCREEN_WIDTH, SCREEN_HEIGHT, self.player_2, self.round_over, self.cmd_p1)
-                    self.player_2.move(SCREEN_WIDTH, SCREEN_HEIGHT, self.player_1, self.round_over, self.cmd_p2)
+                    # Lógica para o modo campanha
+                    if self.modo == "campanha":
+                        # Chame uma função de IA simples para o bot
+                        bot_commands = bot_ia(self.player_2, self.player_1)
+                        self.player_2.move(SCREEN_WIDTH, SCREEN_HEIGHT, self.player_1, self.round_over, bot_commands)
+                    else:
+                        self.player_2.move(SCREEN_WIDTH, SCREEN_HEIGHT, self.player_1, self.round_over, self.cmd_p2)
             else:
                 # Exibe a contagem regressiva
-                draw_text(str(self.intro_count), self.assets['count_font'], (255, 0, 0),
-                          SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3, self.screen)
-                if pygame.time.get_ticks() - self.last_count_update >= 1000:
-                    self.intro_count -= 1
-                    self.last_count_update = pygame.time.get_ticks()
+                if self.intro_count > 0:
+                    count_text = str(self.intro_count)
+                    font = self.assets['count_font']
+                    text_surf = font.render(count_text, True, (255,215,0))
+                    text_shadow = font.render(count_text, True, (0,0,0))
+                    rect = text_surf.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//3))
+                    self.screen.blit(text_shadow, rect.move(4,4))
+                    self.screen.blit(text_surf, rect)
+                    if pygame.time.get_ticks() - self.last_count_update >= 1000:
+                        self.intro_count -= 1
+                        self.last_count_update = pygame.time.get_ticks()
+
+            # Atualiza o timer a cada segundo
+            if pygame.time.get_ticks() - self.last_timer_update > 1000 and self.round_time > 0 and not self.round_over:
+                self.round_time -= 1
+                self.last_timer_update = pygame.time.get_ticks()
 
             # Atualiza e desenha os personagens
             self.player_1.update()
@@ -123,5 +180,17 @@ class Game:
         # Finaliza as threads de input ao sair do loop
         self.stop_event.set()
         self.input_thread1.join()
-        self.input_thread2.join()
+        if hasattr(self, "input_thread2"):
+            self.input_thread2.join()
         # NÃO chame pygame.quit() aqui!
+
+def bot_ia(bot, target):
+    commands = {'left': False, 'right': False, 'jump': False, 'block': False, 'attack1': False, 'attack2': False}
+    # Exemplo: anda até o player e ataca se estiver perto
+    if bot.rect.centerx < target.rect.centerx - 60:
+        commands['right'] = True
+    elif bot.rect.centerx > target.rect.centerx + 60:
+        commands['left'] = True
+    else:
+        commands['attack1'] = True
+    return commands

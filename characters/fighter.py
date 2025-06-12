@@ -41,7 +41,11 @@ class Fighter:
         self.timer_ragdoll = 0 # Tempo para se levantar denovo
         self.last_hit_time = 0
         self.combo_timeout = 1000
-        self.blocking = False
+        self.blocking = False  # Inicializa o atributo
+
+        # Exemplo de dicionário de comandos para cada player
+        self.cmd_p1 = {'left': False, 'right': False, 'jump': False, 'block': False, 'attack1': False, 'attack2': False}
+        self.cmd_p2 = {'left': False, 'right': False, 'jump': False, 'block': False, 'attack1': False, 'attack2': False}
 
     # Carrega as imagens das animações a partir do sprite sheet
     def load_images(self, sprite_sheet, animation_steps):
@@ -63,12 +67,15 @@ class Fighter:
         dy = 0
         self.running = False
 
-        # Só permite movimento se não estiver atacando, estiver vivo e o round não acabou
+        # Só permite movimento se não estiver atacando, estiver vivo, não estiver levando hit e o round não acabou
         if not self.attacking and self.alive and not round_over:
+            if self.hit:
+                # Durante hit, só aplica knockback leve (ver abaixo)
+                return
             if commands['left']: dx = -SPEED; self.running = True
             if commands['right']: dx = SPEED; self.running = True
             if commands['jump'] and not self.jump: self.vel_y = -30; self.jump = True
-            self.blocking = commands['block']
+            self.blocking = commands.get('block', False)
             if commands['attack1'] or commands['attack2']:
                 self.attack(target)
                 self.attack_type = 1 if commands['attack1'] else 2
@@ -102,6 +109,7 @@ class Fighter:
             self.alive = False
             self.update_action(DEATH)
         elif self.hit:
+            self.attacking = False  # Impede atacar durante hit
             self.update_action(HIT)
         elif self.attacking:
             self.update_action(ATTACK1 if self.attack_type == 1 else ATTACK2)
@@ -149,18 +157,22 @@ class Fighter:
 
             # Se acertar o oponente
             if attacking_rect.colliderect(target.rect):
-                if target.blocking:
+                if target.blocking and target.combo_counter < 2:
                     damage = 3
                 else:
                     damage = 10
                 target.health -= damage
                 target.hit = True
 
-                # Lançamento para trás no 4º hit do combo
+                # Knockback leve em cada hit, exceto no 4º hit (ragdoll)
                 if self.combo_counter == 4:
                     knockback = -170 if not target.flip else 170
                     target.rect.x += knockback
-                    self.combo_counter = 0  # reseta combo após o lançamento
+                    target.combo_counter = 0  # reseta combo após o lançamento
+                else:
+                    # Knockback leve
+                    knockback = -15 if not target.flip else 15
+                    target.rect.x += knockback
 
     # Atualiza a ação de animação
     def update_action(self, new_action):
