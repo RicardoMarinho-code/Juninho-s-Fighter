@@ -14,10 +14,10 @@ def show_controls(screen):
 
         controls = [
             "Jogador 1:",
-            "  A/D = mover   W = pular   S = bloquear   F = ataque 1   G = ataque 2",
+            "  A/D = mover   W = pular   E = bloquear   R = ataque 1   T= ataque 2",
             "",
             "Jogador 2:",
-            "  ←/→ = mover   ↑ = pular   ↓ = bloquear   K = ataque 1   L = ataque 2"
+            "  B/M = mover   SPACE = pular   L = bloquear   O = ataque 1   P = ataque 2"
         ]
         for i, txt in enumerate(controls):
             line = HUD_FONT.render(txt, True, WHITE)

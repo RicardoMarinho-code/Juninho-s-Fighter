@@ -9,10 +9,24 @@ def selecionar_personagem(screen, titulo_jogador="Selecione seu personagem"):
     import pygame
     from config import SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, YELLOW
 
-    warrior_img = pygame.image.load("assets/imagens/warrior/sprites/warrior.png").convert_alpha()
-    wizard_img = pygame.image.load("assets/imagens/wizard/sprites/wizard.png").convert_alpha()
-    warrior_frame = pygame.transform.scale(warrior_img.subsurface((0, 0, 80, 180)), (60, 120))
-    wizard_frame = pygame.transform.scale(wizard_img.subsurface((0, 0, 80, 180)), (60, 120))
+    # Defina o tamanho do retângulo de seleção
+    bar_width = 500
+    bar_height = 110
+    bar_x = (SCREEN_WIDTH - bar_width) // 2
+    bar_y = SCREEN_HEIGHT // 2 + 60
+    spacing = bar_width // 5  # 5 personagens
+
+    # Tamanho do retângulo interno (igual ao usado no loop de desenho)
+    rect_width = spacing - 20
+    rect_height = bar_height - 20
+
+    # Carrega as imagens originais
+    warrior_img = pygame.image.load("assets/imagens/imgs_escolha/warrior_escolha.png").convert_alpha()
+    wizard_img = pygame.image.load("assets/imagens/imgs_escolha/mage_escolha.png").convert_alpha()
+
+    # Redimensiona/comprime para caber no retângulo (sem cortar)
+    warrior_frame = pygame.transform.smoothscale(warrior_img, (rect_width, rect_height))
+    wizard_frame = pygame.transform.smoothscale(wizard_img, (rect_width, rect_height))
 
     nomes = ["Guerreiro", "Mago", "???", "???", "???"]
     sprites = [warrior_frame, wizard_frame, None, None, None]
@@ -20,11 +34,6 @@ def selecionar_personagem(screen, titulo_jogador="Selecione seu personagem"):
 
     title_font = TITLE_FONT
     small_font = HUD_FONT
-
-    bar_width = 500
-    bar_height = 110
-    bar_x = (SCREEN_WIDTH - bar_width) // 2
-    bar_y = SCREEN_HEIGHT // 2 + 60
 
     selected = [None, None]  # [P1, P2]
     current = [0, 1]         # Índice atual de seleção para cada player
