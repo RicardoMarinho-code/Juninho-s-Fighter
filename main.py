@@ -22,9 +22,6 @@ while True:
         modo = menu_result[0]
         if modo == "jogar":
             p1, p2 = menu_result[1], menu_result[2]
-        elif modo == "campanha":
-            p1 = menu_result[1]
-            p2 = "wizard"  # Oponente da primeira fase
 
     assets = {}
 
@@ -59,18 +56,15 @@ while True:
     # Sistema de melhor de três
     score = [0, 0]
     vencedor = None
-    game = None  # Adicione esta linha para manter referência ao último game criado
+    game = None
 
     while True:
         if modo == "jogar":
-            game = Game(screen, assets, score, p1, p2, modo)
-        elif modo == "campanha":
             game = Game(screen, assets, score, p1, p2, modo)
         else:
             game = Game(screen, assets, score)
         resultado = game.run()
         if resultado == "menu":
-            # Finaliza as threads antes de voltar ao menu
             if game:
                 game.stop_event.set()
                 game.input_thread1.join()
@@ -79,7 +73,6 @@ while True:
         score = game.score
         if score[0] == 2 or score[1] == 2:
             vencedor = "Jogador 1" if score[0] == 2 else "Jogador 2"
-            # Finaliza as threads antes de mostrar a tela de vitória
             if game:
                 game.stop_event.set()
                 game.input_thread1.join()
@@ -99,9 +92,14 @@ while True:
             if event.type == pygame.QUIT:
                 # Finaliza as threads antes de sair do programa
                 if game:
-                    game.stop_event.set()
-                    game.input_thread1.join()
-                    game.input_thread2.join()
+                    try:
+                        game.stop_event.set()
+                        if hasattr(game, "input_thread1"):
+                            game.input_thread1.join()
+                        if hasattr(game, "input_thread2"):
+                            game.input_thread2.join()
+                    except Exception:
+                        pass
                 pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:

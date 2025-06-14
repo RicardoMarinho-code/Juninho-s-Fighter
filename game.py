@@ -48,24 +48,21 @@ class Game:
         )
 
         # P1 sempre à esquerda, P2 à direita
-        self.player_1 = self.create_fighter(1, self.p1_name, 200, 380, False)  # P1 sempre à esquerda
-        self.player_2 = self.create_fighter(2, self.p2_name, 700, 380, True)   # P2 sempre à direita
+        self.player_1 = self.create_fighter(1, self.p1_name, 200, 380, False)
+        self.player_2 = self.create_fighter(2, self.p2_name, 700, 380, True)
 
         # Inicia a música de fundo
         pygame.mixer.music.play(-1, 0.0, 5000)
 
-        # Threads de input só para o jogador 1 no modo campanha
+        # Threads de input para ambos jogadores
         self.cmd_lock = threading.Lock()
         self.cmd_p1 = {'left': False, 'right': False, 'jump': False, 'block': False, 'attack1': False, 'attack2': False}
         self.stop_event = threading.Event()
         self.input_thread1 = InputThread(1, self.cmd_p1, self.stop_event, self.cmd_lock)
         self.input_thread1.start()
-        if self.modo == "jogar":
-            self.cmd_p2 = {'left': False, 'right': False, 'jump': False, 'block': False, 'attack1': False, 'attack2': False}
-            self.input_thread2 = InputThread(2, self.cmd_p2, self.stop_event, self.cmd_lock)
-            self.input_thread2.start()
-        else:
-            self.cmd_p2 = None  # No bot
+        self.cmd_p2 = {'left': False, 'right': False, 'jump': False, 'block': False, 'attack1': False, 'attack2': False}
+        self.input_thread2 = InputThread(2, self.cmd_p2, self.stop_event, self.cmd_lock)
+        self.input_thread2.start()
 
         self.round_time = 99  # Tempo inicial do round em segundos
         self.last_timer_update = pygame.time.get_ticks()
@@ -84,12 +81,8 @@ class Game:
             draw_health_bar(self.player_2.health, SCREEN_WIDTH - 416, 20, self.screen)
 
             # Nomes dos jogadores
-            if self.modo == "campanha":
-                p1_nome = "Jogador 1"
-                p2_nome = "Mago"  # Ou outro nome do oponente da fase
-            else:
-                p1_nome = "Jogador 1"
-                p2_nome = "Jogador 2"
+            p1_nome = "Jogador 1"
+            p2_nome = "Jogador 2"
 
             p1_label = hud_font.render(p1_nome, True, (255,0,0))
             p2_label = hud_font.render(p2_nome, True, (0,0,255))
@@ -110,13 +103,7 @@ class Game:
             if self.intro_count <= 0:
                 with self.cmd_lock:
                     self.player_1.move(SCREEN_WIDTH, SCREEN_HEIGHT, self.player_2, self.round_over, self.cmd_p1)
-                    # Lógica para o modo campanha
-                    if self.modo == "campanha":
-                        # Chame uma função de IA simples para o bot
-                        bot_commands = bot_ia(self.player_2, self.player_1)
-                        self.player_2.move(SCREEN_WIDTH, SCREEN_HEIGHT, self.player_1, self.round_over, bot_commands)
-                    else:
-                        self.player_2.move(SCREEN_WIDTH, SCREEN_HEIGHT, self.player_1, self.round_over, self.cmd_p2)
+                    self.player_2.move(SCREEN_WIDTH, SCREEN_HEIGHT, self.player_1, self.round_over, self.cmd_p2)
             else:
                 # Exibe a contagem regressiva
                 if self.intro_count > 0:
@@ -179,18 +166,8 @@ class Game:
         
         # Finaliza as threads de input ao sair do loop
         self.stop_event.set()
-        self.input_thread1.join()
+        if hasattr(self, "input_thread1"):
+            self.input_thread1.join()
         if hasattr(self, "input_thread2"):
             self.input_thread2.join()
         # NÃO chame pygame.quit() aqui!
-
-def bot_ia(bot, target):
-    commands = {'left': False, 'right': False, 'jump': False, 'block': False, 'attack1': False, 'attack2': False}
-    # Exemplo: anda até o player e ataca se estiver perto
-    if bot.rect.centerx < target.rect.centerx - 60:
-        commands['right'] = True
-    elif bot.rect.centerx > target.rect.centerx + 60:
-        commands['left'] = True
-    else:
-        commands['attack1'] = True
-    return commands

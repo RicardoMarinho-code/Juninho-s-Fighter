@@ -120,7 +120,7 @@ def selecionar_personagem(screen):
 
         # Instruções
         instr1 = small_font.render("Jogador 1: A/D para mover, W para escolher", True, (255,0,0))
-        instr2 = small_font.render("Jogador 2: ←/→ para mover, ↑ para escolher", True, (0,0,255))
+        instr2 = small_font.render("Jogador 2: B/M para mover, SPACE para escolher", True, (0,0,255))
         screen.blit(instr1, (bar_x, bar_y - 40))
         screen.blit(instr2, (bar_x, bar_y - 20))
 
@@ -129,7 +129,8 @@ def selecionar_personagem(screen):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                exit()
+                import sys
+                sys.exit()
             elif event.type == pygame.KEYDOWN:
                 # Jogador 1: A/D para mover, W para selecionar
                 if event.key == pygame.K_a:
@@ -139,11 +140,11 @@ def selecionar_personagem(screen):
                 elif event.key == pygame.K_w and ids[current[0]] is not None:
                     selected[0] = ids[current[0]]
                 # Jogador 2: ←/→ para mover, ↑ para selecionar
-                elif event.key == pygame.K_LEFT:
+                elif event.key == pygame.K_b:
                     current[1] = (current[1] - 1) % len(nomes)
-                elif event.key == pygame.K_RIGHT:
+                elif event.key == pygame.K_m:
                     current[1] = (current[1] + 1) % len(nomes)
-                elif event.key == pygame.K_UP and ids[current[1]] is not None:
+                elif event.key == pygame.K_SPACE and ids[current[1]] is not None:
                     selected[1] = ids[current[1]]
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if start_btn_hover and selected[0] and selected[1]:
@@ -211,7 +212,8 @@ def selecionar_personagem_campanha(screen):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                exit()
+                import sys
+                sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
                     current = (current - 1) % len(nomes)
