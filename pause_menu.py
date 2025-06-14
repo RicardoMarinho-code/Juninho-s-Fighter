@@ -42,7 +42,7 @@ def show_pause_menu(screen, stop_event=None, input_thread1=None, input_thread2=N
                         elif btn == opcoes_btn:
                             volume = show_opcoes_menu(screen, volume)
                         elif btn == menu_btn:
-                            return "menu", volume
+                            return "menu"  # Agora retorna so menu
                     btn.pressed = False
 
         pygame.display.flip()
