@@ -2,14 +2,14 @@
 import pygame
 from config import SCREEN_WIDTH, SCREEN_HEIGHT
 from ui_components import (
-    Button, BUTTON_FONT, TITLE_FONT, HUD_FONT, WHITE, GRAY, YELLOW, BLUE, LIGHT_BLUE, DARK_BLUE
+    TITLE_FONT, HUD_FONT, WHITE, GRAY, YELLOW
 )
 
-def selecionar_personagem(screen, titulo_jogador="Selecione seu personagem"):
+def selecionar_personagem(screen):
     import pygame
     from config import SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, YELLOW
 
-    # Defina o tamanho do retângulo de seleção
+    # Defina o tamanho do retângulo de seleçãotitulo_jogador
     bar_width = 500
     bar_height = 110
     bar_x = (SCREEN_WIDTH - bar_width) // 2

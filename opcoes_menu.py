@@ -1,7 +1,7 @@
 import pygame
-from config import SCREEN_WIDTH, SCREEN_HEIGHT
+from config import SCREEN_WIDTH
 from ui_components import (
-    Button, BUTTON_FONT, TITLE_FONT, HUD_FONT, WHITE, GRAY, BLUE, LIGHT_BLUE, DARK_BLUE, GOLD
+    Button, TITLE_FONT, HUD_FONT, WHITE, GRAY, BLUE, LIGHT_BLUE, DARK_BLUE, GOLD
 )
 
 def show_controls(screen):

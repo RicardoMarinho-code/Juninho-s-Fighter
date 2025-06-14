@@ -6,8 +6,8 @@ from config import SCREEN_WIDTH, SCREEN_HEIGHT
 from character_select import selecionar_personagem, selecionar_personagem_campanha
 from campaign_tower import mostrar_torre
 from ui_components import (
-    Button, BUTTON_FONT, TITLE_FONT, HUD_FONT, TIMER_FONT, PLACAR_FONT,
-    WHITE, GRAY, BLUE, LIGHT_BLUE, DARK_BLUE, YELLOW, GOLD, RED
+    Button, TITLE_FONT,
+    WHITE, BLUE, LIGHT_BLUE, DARK_BLUE
 )
 from opcoes_menu import show_opcoes_menu
 

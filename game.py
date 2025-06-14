@@ -1,7 +1,7 @@
 # game.py - Loop principal do jogo e controle dos rounds
 import pygame
 from config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
-from ui import draw_background, draw_health_bar, draw_text
+from ui import draw_background, draw_health_bar
 from characters.fighter import *
 from characters.input_thread import *
 from utils.constants import *

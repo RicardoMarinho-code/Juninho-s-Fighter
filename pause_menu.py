@@ -1,9 +1,9 @@
 # pause_menu.py
 import pygame
 import sys
-from config import SCREEN_WIDTH, SCREEN_HEIGHT
+from config import SCREEN_WIDTH
 from ui_components import (
-    Button, BUTTON_FONT, TITLE_FONT, WHITE, GRAY, BLUE, LIGHT_BLUE, DARK_BLUE
+    Button, TITLE_FONT, WHITE, GRAY, BLUE, LIGHT_BLUE, DARK_BLUE
 )
 from opcoes_menu import show_opcoes_menu
 

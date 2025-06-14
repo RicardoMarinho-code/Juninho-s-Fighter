@@ -1,6 +1,5 @@
 # ui.py - Funções para desenhar texto, barra de vida e fundo
 import pygame
-from config import WHITE, RED, YELLOW
 
 # Função para desenhar texto na tela
 def draw_text(text, font, color, x, y, surface):
