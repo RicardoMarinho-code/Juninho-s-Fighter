@@ -1,8 +1,10 @@
 import pygame
+from character_select import select_character
 from config import SCREEN_WIDTH
 from ui_components import (
     Button, TITLE_FONT, HUD_FONT, WHITE, GRAY, BLUE, LIGHT_BLUE, DARK_BLUE, GOLD
 )
+from map_select import select_map
 
 def show_controls(screen):
     clock = pygame.time.Clock()
@@ -92,3 +94,51 @@ def show_opcoes_menu(screen, volume):
                 pygame.mixer.music.set_volume(volume)
         clock.tick(60)
     return volume
+
+def show_menu(screen, volume=1.0):
+    clock = pygame.time.Clock()
+    buttons = {
+        "jogar": Button("Jogar", SCREEN_WIDTH//2 - 100, 250, 200, 60, BLUE, LIGHT_BLUE, DARK_BLUE),
+        "opcoes": Button("Opções", SCREEN_WIDTH//2 - 100, 320, 200, 60, BLUE, LIGHT_BLUE, DARK_BLUE),
+        "sair": Button("Sair", SCREEN_WIDTH//2 - 100, 390, 200, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
+    }
+
+    while True:
+        screen.fill(GRAY)
+        title = TITLE_FONT.render("Menu Principal", True, WHITE)
+        screen.blit(title, title.get_rect(center=(SCREEN_WIDTH // 2, 100)))
+
+        # Desenha os botões
+        for btn in buttons.values():
+            btn.draw(screen)
+
+        pygame.display.flip()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse = pygame.mouse.get_pos()
+                for name, btn in buttons.items():
+                    if btn.hovered:
+                        btn.pressed = True
+            elif event.type == pygame.MOUSEBUTTONUP:
+                mouse = pygame.mouse.get_pos()
+                for name, btn in buttons.items():
+                    if btn.pressed and btn.hovered:
+                        if name == "jogar":
+                            p1, p2 = select_character(screen)
+                            selected_map = select_map(screen)
+                            return ("jogar", p1, p2, selected_map)
+                        elif name == "opcoes":
+                            volume = show_opcoes_menu(screen, volume)
+                        elif name == "sair":
+                            pygame.quit()
+                            exit()
+                    btn.pressed = False
+            elif event.type == pygame.MOUSEMOTION:
+                mouse = pygame.mouse.get_pos()
+                for btn in buttons.values():
+                    btn.check_hover(mouse)
+
+        clock.tick(60)

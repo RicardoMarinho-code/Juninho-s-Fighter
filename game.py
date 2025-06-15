@@ -171,3 +171,5 @@ class Game:
         if hasattr(self, "input_thread2"):
             self.input_thread2.join()
         # NÃO chame pygame.quit() aqui!
+
+

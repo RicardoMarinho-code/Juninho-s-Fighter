@@ -3,7 +3,7 @@ from pygame import mixer
 
 # Função que carrega todos os recursos (imagens, sons, fontes)
 # Essa função só deve ser chamada após inicializar o display (pygame.display.set_mode)
-def load_assets():
+def load_assets(selected_map):
     try:
         # Inicializa o mixer de áudio
         mixer.init()
@@ -21,10 +21,11 @@ def load_assets():
 
         # Carrega imagens com transparência (convert_alpha)
         # Só pode ser feito depois de iniciar a janela do Pygame
-        background_img = pygame.image.load("assets/imagens/Background/background1.jpeg").convert_alpha()
-        victory_img = pygame.image.load("assets/imagens/icons/victory.png").convert_alpha()
-        warrior_sheet = pygame.image.load("assets/imagens/warrior/sprites/warrior.png").convert_alpha()
-        wizard_sheet = pygame.image.load("assets/imagens/wizard/sprites/wizard.png").convert_alpha()
+        assets = {}
+        assets['background_img'] = pygame.image.load(selected_map).convert()
+        assets['victory_img'] = pygame.image.load("assets/imagens/icons/victory.png").convert_alpha()
+        assets['warrior_sheet'] = pygame.image.load("assets/imagens/warrior/sprites/warrior.png").convert_alpha()
+        assets['wizard_sheet'] = pygame.image.load("assets/imagens/wizard/sprites/wizard.png").convert_alpha()
 
         # Carrega fontes com tamanho 80
         count_font = pygame.font.Font("assets/font/turok.ttf", 80)
@@ -32,10 +33,10 @@ def load_assets():
 
         # Retorna todos os recursos organizados num dicionário
         return {
-            "background_img": background_img,
-            "victory_img": victory_img,
-            "warrior_sheet": warrior_sheet,
-            "wizard_sheet": wizard_sheet,
+            "background_img": assets['background_img'],
+            "victory_img": assets['victory_img'],
+            "warrior_sheet": assets['warrior_sheet'],
+            "wizard_sheet": assets['wizard_sheet'],
             "sword_fx": sword_fx,
             "magic_fx": magic_fx,
             "count_font": count_font,

@@ -6,25 +6,19 @@ from ui_components import (
 )
 
 def select_character(screen):
-    import pygame
-    from config import SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, YELLOW
-
-    # Defina o tamanho do retângulo de seleçãotitulo_jogador
+    # Layout
     bar_width = 500
     bar_height = 110
     bar_x = (SCREEN_WIDTH - bar_width) // 2
-    bar_y = SCREEN_HEIGHT // 2 + 60
-    spacing = bar_width // 5  # 5 personagens
+    bar_y = SCREEN_HEIGHT // 2 + 40
+    spacing = bar_width // 5  # 5 characters
 
-    # Tamanho do retângulo interno (igual ao usado no loop de desenho)
-    rect_width = spacing - 20
-    rect_height = bar_height - 20
+    rect_width = spacing - 27
+    rect_height = bar_height - 27
 
-    # Carrega as imagens originais
+    # Load images
     warrior_img = pygame.image.load("assets/imagens/imgs_escolha/warrior_escolha.png").convert_alpha()
     wizard_img = pygame.image.load("assets/imagens/imgs_escolha/mage_escolha.png").convert_alpha()
-
-    # Redimensiona/comprime para caber no retângulo (sem cortar)
     warrior_frame = pygame.transform.smoothscale(warrior_img, (rect_width, rect_height))
     wizard_frame = pygame.transform.smoothscale(wizard_img, (rect_width, rect_height))
 
@@ -36,7 +30,7 @@ def select_character(screen):
     small_font = HUD_FONT
 
     selected = [None, None]  # [P1, P2]
-    current = [0, 1]         # Índice atual de seleção para cada player
+    current = [0, 1]         # Current selection index for each player
 
     start_btn_rect = pygame.Rect(SCREEN_WIDTH//2 - 100, bar_y + bar_height + 40, 200, 60)
     start_btn_hover = False
@@ -45,84 +39,86 @@ def select_character(screen):
     running = True
     while running:
         screen.fill(GRAY)
-        title = title_font.render("Seleção de Personagem", True, WHITE)
-        screen.blit(title, title.get_rect(center=(SCREEN_WIDTH // 2, 80)))
+        # Title
+        title = title_font.render("Character Selection", True, WHITE)
+        screen.blit(title, title.get_rect(center=(SCREEN_WIDTH // 2, 60)))
 
-        # names dos jogadores nos cantos
-        p1_label = small_font.render("Jogador 1", True, (255,0,0))
-        p2_label = small_font.render("Jogador 2", True, (0,0,255))
-        screen.blit(p1_label, (40, 220))
-        screen.blit(p2_label, (SCREEN_WIDTH - p2_label.get_width() - 40, 220))
+        # Player labels (above images, not overlapping)
+        p1_label = small_font.render("Player 1", True, (255,0,0))
+        p2_label = small_font.render("Player 2", True, (0,0,255))
+        screen.blit(p1_label, (60, 120))
+        screen.blit(p2_label, (SCREEN_WIDTH - p2_label.get_width() - 60, 120))
 
-        # Mostra personagem escolhido por cada player nos lados
+        # Show selected character images on the sides, below the labels
         sprite_width, sprite_height = 120, 240
-        margin_x = 60  # margem da borda da tela
+        margin_x = 60
+        image_y = 150  # below the label
 
-        # P1 (esquerda) - centralizado verticalmente, afastado da borda
+        # P1 (left)
         if selected[0] is not None:
             idx = ids.index(selected[0])
             if sprites[idx]:
                 img = pygame.transform.scale(sprites[idx], (sprite_width, sprite_height))
                 img_rect = img.get_rect()
                 img_rect.left = margin_x
-                img_rect.centery = SCREEN_HEIGHT // 2
+                img_rect.top = image_y
                 screen.blit(img, img_rect)
-                # Para P1
-                pygame.draw.rect(screen, (0,255,0), img_rect, 2)
+                # Outline for P1
+                pygame.draw.rect(screen, (255, 0, 0), img_rect, 4, border_radius=12)
 
-        # P2 (direita) - centralizado verticalmente, afastado da borda
+        # P2 (right)
         if selected[1] is not None:
             idx = ids.index(selected[1])
             if sprites[idx]:
                 img = pygame.transform.scale(sprites[idx], (sprite_width, sprite_height))
                 img_rect = img.get_rect()
                 img_rect.right = SCREEN_WIDTH - margin_x
-                img_rect.centery = SCREEN_HEIGHT // 2
+                img_rect.top = image_y
                 screen.blit(img, img_rect)
-                # Para P2
-                pygame.draw.rect(screen, (255,0,0), img_rect, 2)
+                # Outline for P2
+                pygame.draw.rect(screen, (0, 0, 255), img_rect, 4, border_radius=12)
 
-        # Barra de seleção de personagens (sem borda dourada)
-        spacing = bar_width // len(names)
-        for i, nome in enumerate(names):
+        # Character selection bar
+        for i, name in enumerate(names):
             rect = pygame.Rect(bar_x + i*spacing + 10, bar_y + 10, spacing-20, bar_height-20)
-            # Borda de seleção atual (apenas colorida)
+            # Current selection outline
             if current[0] == i:
                 pygame.draw.rect(screen, (255, 0, 0), rect, 3, border_radius=10)
             if current[1] == i:
                 pygame.draw.rect(screen, (0, 0, 255), rect, 3, border_radius=10)
-            # Borda de personagem já escolhido
+            # Already chosen outline
             if selected[0] == ids[i]:
                 pygame.draw.rect(screen, (255, 100, 100), rect, 5, border_radius=10)
             if selected[1] == ids[i]:
                 pygame.draw.rect(screen, (100, 100, 255), rect, 5, border_radius=10)
-            # Sprite ou "?"
+            # Sprite or "?"
 
             if sprites[i]:
                 img_rect = sprites[i].get_rect(center=rect.center)
                 screen.blit(sprites[i], img_rect)
             else:
-                lock_font = pygame.font.SysFont('Arial', 40)
+                lock_font = small_font
                 lock = lock_font.render("?", True, (120,120,120))
                 screen.blit(lock, lock.get_rect(center=rect.center))
-            # Nome
-            name_surf = small_font.render(nome, True, YELLOW)
+            # Name
+            name_surf = small_font.render(name, True, YELLOW)
             screen.blit(name_surf, name_surf.get_rect(center=(rect.centerx, rect.bottom + 18)))
 
-        # Botão iniciar
+        # Start button
         mouse = pygame.mouse.get_pos()
         start_btn_hover = start_btn_rect.collidepoint(mouse)
         btn_color = (0, 150, 255) if start_btn_hover and selected[0] and selected[1] else (0, 100, 200)
         pygame.draw.rect(screen, btn_color, start_btn_rect, border_radius=14)
-        btn_text = title_font.render("INICIAR", True, WHITE if selected[0] and selected[1] else (180,180,180))
+        btn_text = title_font.render("START", True, WHITE if selected[0] and selected[1] else (180,180,180))
         btn_rect = btn_text.get_rect(center=start_btn_rect.center)
         screen.blit(btn_text, btn_rect)
 
-        # Instruções
-        instr1 = small_font.render("Jogador 1: A/D para mover, W para escolher", True, (255,0,0))
-        instr2 = small_font.render("Jogador 2: B/M para mover, SPACE para escolher", True, (0,0,255))
-        screen.blit(instr1, (bar_x, bar_y - 40))
-        screen.blit(instr2, (bar_x, bar_y - 20))
+        # Instructions (logo abaixo da barra)
+        instr1 = small_font.render("Player 1: A/D to move, W to select", True, (255,0,0))
+        instr2 = small_font.render("Player 2: B/M to move, SPACE to select", True, (0,0,255))
+        instr_y = bar_y + bar_height + 110
+        screen.blit(instr1, (bar_x, instr_y))
+        screen.blit(instr2, (bar_x, instr_y + 30))
 
         pygame.display.flip()
 
@@ -132,14 +128,14 @@ def select_character(screen):
                 import sys
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                # Jogador 1: A/D para mover, W para selecionar
+                # Player 1: A/D to move, W to select
                 if event.key == pygame.K_a:
                     current[0] = (current[0] - 1) % len(names)
                 elif event.key == pygame.K_d:
                     current[0] = (current[0] + 1) % len(names)
                 elif event.key == pygame.K_w and ids[current[0]] is not None:
                     selected[0] = ids[current[0]]
-                # Jogador 2: ←/→ para mover, ↑ para selecionar
+                # Player 2: B/M to move, SPACE to select
                 elif event.key == pygame.K_b:
                     current[1] = (current[1] - 1) % len(names)
                 elif event.key == pygame.K_m:

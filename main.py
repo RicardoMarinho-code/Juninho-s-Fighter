@@ -21,16 +21,14 @@ while True:
     if isinstance(menu_result, tuple):
         mode = menu_result[0]
         if mode == "jogar":
-            p1, p2 = menu_result[1], menu_result[2]
+            p1, p2, selected_map = menu_result[1], menu_result[2], menu_result[3]
 
     assets = {}
 
-    # Função para carregar os assets em uma thread separada
     def load_assets_thread():
         global assets
-        assets = load_assets()
+        assets = load_assets(selected_map)
 
-    # Inicia a thread de carregamento dos assets
     thread = threading.Thread(target=load_assets_thread)
     thread.start()
 

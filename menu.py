@@ -9,6 +9,7 @@ from ui_components import (
     WHITE, BLUE, LIGHT_BLUE, DARK_BLUE
 )
 from opcoes_menu import show_opcoes_menu
+from map_select import select_map
 
 def show_menu(screen, volume=1.0):
     pygame.mouse.set_visible(True)
@@ -70,7 +71,8 @@ def show_menu(screen, volume=1.0):
                     if btn.pressed and btn.hovered:
                         if name == "jogar":
                             p1, p2 = select_character(screen)
-                            return ("jogar", p1, p2, volume)
+                            selected_map = select_map(screen)
+                            return ("jogar", p1, p2, selected_map)
                         elif name == "opcoes":
                             volume = show_opcoes_menu(screen, volume)
                         elif name == "sair":
