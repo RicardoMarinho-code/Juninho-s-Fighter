@@ -12,11 +12,11 @@ import sys
 # Tenta carregar as fontes personalizadas, se não conseguir, usa as padrões do sistema
 try:
     timer_font = pygame.font.Font("assets/font/turok.ttf", 54)
-    placar_font = pygame.font.Font("assets/font/turok.ttf", 36)
+    score_font = pygame.font.Font("assets/font/turok.ttf", 36)
     hud_font = pygame.font.Font("assets/font/turok.ttf", 32)
 except:
     timer_font = pygame.font.SysFont('Arial', 54, bold=True)
-    placar_font = pygame.font.SysFont('Arial', 36, bold=True)
+    score_font = pygame.font.SysFont('Arial', 36, bold=True)
     hud_font = pygame.font.SysFont('Arial', 32)
 
 class Game:
@@ -64,7 +64,7 @@ class Game:
         self.input_thread2 = InputThread(2, self.cmd_p2, self.stop_event, self.cmd_lock)
         self.input_thread2.start()
 
-        self.round_time = 99  # Tempo inicial do round em segundos
+        self.round_time = 99  # time inicial do round em segundos
         self.last_timer_update = pygame.time.get_ticks()
 
     # Loop principal do jogo
@@ -80,24 +80,24 @@ class Game:
             # Barra de vida do P2 (direita)
             draw_health_bar(self.player_2.health, SCREEN_WIDTH - 416, 20, self.screen)
 
-            # Nomes dos jogadores
-            p1_nome = "Jogador 1"
-            p2_nome = "Jogador 2"
+            # nome dos jogadores
+            p1_name = "Jogador 1"
+            p2_name = "Jogador 2"
 
-            p1_label = hud_font.render(p1_nome, True, (255,0,0))
-            p2_label = hud_font.render(p2_nome, True, (0,0,255))
+            p1_label = hud_font.render(p1_name, True, (255,0,0))
+            p2_label = hud_font.render(p2_name, True, (0,0,255))
             self.screen.blit(p1_label, (30, 60))
             self.screen.blit(p2_label, (SCREEN_WIDTH - p2_label.get_width() - 30, 60))
 
-            # Tempo centralizado entre as barras
-            tempo_text = timer_font.render(str(self.round_time), True, (255, 215, 0))
-            tempo_rect = tempo_text.get_rect(center=(SCREEN_WIDTH // 2, 40))
-            self.screen.blit(tempo_text, tempo_rect)
+            # time centralizado entre as barras
+            time_text = timer_font.render(str(self.round_time), True, (255, 215, 0))
+            time_rect = time_text.get_rect(center=(SCREEN_WIDTH // 2, 40))
+            self.screen.blit(time_text, time_rect)
 
-            # Placar centralizado abaixo do tempo
-            placar_text = placar_font.render(f"{self.score[0]}  -  {self.score[1]}", True, (255,255,255))
-            placar_rect = placar_text.get_rect(center=(SCREEN_WIDTH // 2, 80))
-            self.screen.blit(placar_text, placar_rect)
+            # Placar centralizado abaixo do time
+            score_text = score_font.render(f"{self.score[0]}  -  {self.score[1]}", True, (255,255,255))
+            score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, 80))
+            self.screen.blit(score_text, score_rect)
 
             # Se a contagem regressiva acabou, permite movimento dos jogadores
             if self.intro_count <= 0:

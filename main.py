@@ -19,8 +19,8 @@ while True:
         break
 
     if isinstance(menu_result, tuple):
-        modo = menu_result[0]
-        if modo == "jogar":
+        mode = menu_result[0]
+        if mode == "jogar":
             p1, p2 = menu_result[1], menu_result[2]
 
     assets = {}
@@ -55,12 +55,12 @@ while True:
 
     # Sistema de melhor de três
     score = [0, 0]
-    vencedor = None
+    winner = None
     game = None
 
     while True:
-        if modo == "jogar":
-            game = Game(screen, assets, score, p1, p2, modo)
+        if mode == "jogar":
+            game = Game(screen, assets, score, p1, p2, mode)
         else:
             game = Game(screen, assets, score)
         resultado = game.run()
@@ -72,7 +72,7 @@ while True:
             break
         score = game.score
         if score[0] == 2 or score[1] == 2:
-            vencedor = "Jogador 1" if score[0] == 2 else "Jogador 2"
+            winner = "Jogador 1" if score[0] == 2 else "Jogador 2"
             if game:
                 game.stop_event.set()
                 game.input_thread1.join()
@@ -83,7 +83,7 @@ while True:
     waiting = True
     while waiting:
         screen.fill((0, 0, 0))
-        win_text = font.render(f"{vencedor} venceu!", True, (255, 255, 0))
+        win_text = font.render(f"{winner} venceu!", True, (255, 255, 0))
         info_text = font.render("Pressione ENTER para voltar ao menu", True, (255, 255, 255))
         screen.blit(win_text, (SCREEN_WIDTH // 2 - win_text.get_width() // 2, SCREEN_HEIGHT // 2 - win_text.get_height()))
         screen.blit(info_text, (SCREEN_WIDTH // 2 - info_text.get_width() // 2, SCREEN_HEIGHT // 2 + 20))

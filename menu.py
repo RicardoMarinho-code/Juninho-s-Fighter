@@ -3,7 +3,7 @@ import pygame
 import sys
 import math
 from config import SCREEN_WIDTH, SCREEN_HEIGHT
-from character_select import selecionar_personagem
+from character_select import select_character
 from ui_components import (
     Button, TITLE_FONT,
     WHITE, BLUE, LIGHT_BLUE, DARK_BLUE
@@ -24,17 +24,17 @@ def show_menu(screen, volume=1.0):
     base_y = 250  # Posição Y do primeiro botão
 
     # Calcula as posições Y dos botões
-    jogar_y = base_y
-    opcoes_y = jogar_y + button_height + spacing
-    sair_y = opcoes_y + button_height + spacing
+    play_y = base_y
+    options_y = play_y + button_height + spacing
+    exit_y = options_y + button_height + spacing
 
-    jogar_btn = Button("Jogar", SCREEN_WIDTH//2 - button_width//2, jogar_y, button_width, button_height, BLUE, LIGHT_BLUE, DARK_BLUE)
-    opcoes_btn = Button("Opcoes", SCREEN_WIDTH//2 - button_width//2, opcoes_y, button_width, button_height, BLUE, LIGHT_BLUE, DARK_BLUE)
-    sair_btn = Button("Sair", SCREEN_WIDTH//2 - button_width//2, sair_y, button_width, button_height, BLUE, LIGHT_BLUE, DARK_BLUE)
+    play_btn = Button("Jogar", SCREEN_WIDTH//2 - button_width//2, play_y, button_width, button_height, BLUE, LIGHT_BLUE, DARK_BLUE)
+    opcoes_btn = Button("Opcoes", SCREEN_WIDTH//2 - button_width//2, options_y, button_width, button_height, BLUE, LIGHT_BLUE, DARK_BLUE)
+    exit_btn = Button("Sair", SCREEN_WIDTH//2 - button_width//2, exit_y, button_width, button_height, BLUE, LIGHT_BLUE, DARK_BLUE)
     buttons = {
-        "jogar": jogar_btn,
+        "jogar": play_btn,
         "opcoes": opcoes_btn,
-        "sair": sair_btn
+        "sair": exit_btn
     }
 
     t = 0  # tempo para animação
@@ -69,7 +69,7 @@ def show_menu(screen, volume=1.0):
                 for name, btn in buttons.items():
                     if btn.pressed and btn.hovered:
                         if name == "jogar":
-                            p1, p2 = selecionar_personagem(screen)
+                            p1, p2 = select_character(screen)
                             return ("jogar", p1, p2, volume)
                         elif name == "opcoes":
                             volume = show_opcoes_menu(screen, volume)

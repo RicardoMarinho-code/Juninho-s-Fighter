@@ -5,7 +5,7 @@ from ui_components import (
     TITLE_FONT, HUD_FONT, WHITE, GRAY, YELLOW
 )
 
-def selecionar_personagem(screen):
+def select_character(screen):
     import pygame
     from config import SCREEN_WIDTH, SCREEN_HEIGHT, WHITE, YELLOW
 
@@ -28,7 +28,7 @@ def selecionar_personagem(screen):
     warrior_frame = pygame.transform.smoothscale(warrior_img, (rect_width, rect_height))
     wizard_frame = pygame.transform.smoothscale(wizard_img, (rect_width, rect_height))
 
-    nomes = ["Guerreiro", "Mago", "???", "???", "???"]
+    names = ["Guerreiro", "Mago", "???", "???", "???"]
     sprites = [warrior_frame, wizard_frame, None, None, None]
     ids = ["warrior", "wizard", None, None, None]
 
@@ -48,7 +48,7 @@ def selecionar_personagem(screen):
         title = title_font.render("Seleção de Personagem", True, WHITE)
         screen.blit(title, title.get_rect(center=(SCREEN_WIDTH // 2, 80)))
 
-        # Nomes dos jogadores nos cantos
+        # names dos jogadores nos cantos
         p1_label = small_font.render("Jogador 1", True, (255,0,0))
         p2_label = small_font.render("Jogador 2", True, (0,0,255))
         screen.blit(p1_label, (40, 220))
@@ -83,8 +83,8 @@ def selecionar_personagem(screen):
                 pygame.draw.rect(screen, (255,0,0), img_rect, 2)
 
         # Barra de seleção de personagens (sem borda dourada)
-        spacing = bar_width // len(nomes)
-        for i, nome in enumerate(nomes):
+        spacing = bar_width // len(names)
+        for i, nome in enumerate(names):
             rect = pygame.Rect(bar_x + i*spacing + 10, bar_y + 10, spacing-20, bar_height-20)
             # Borda de seleção atual (apenas colorida)
             if current[0] == i:
@@ -134,16 +134,16 @@ def selecionar_personagem(screen):
             elif event.type == pygame.KEYDOWN:
                 # Jogador 1: A/D para mover, W para selecionar
                 if event.key == pygame.K_a:
-                    current[0] = (current[0] - 1) % len(nomes)
+                    current[0] = (current[0] - 1) % len(names)
                 elif event.key == pygame.K_d:
-                    current[0] = (current[0] + 1) % len(nomes)
+                    current[0] = (current[0] + 1) % len(names)
                 elif event.key == pygame.K_w and ids[current[0]] is not None:
                     selected[0] = ids[current[0]]
                 # Jogador 2: ←/→ para mover, ↑ para selecionar
                 elif event.key == pygame.K_b:
-                    current[1] = (current[1] - 1) % len(nomes)
+                    current[1] = (current[1] - 1) % len(names)
                 elif event.key == pygame.K_m:
-                    current[1] = (current[1] + 1) % len(nomes)
+                    current[1] = (current[1] + 1) % len(names)
                 elif event.key == pygame.K_SPACE and ids[current[1]] is not None:
                     selected[1] = ids[current[1]]
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -154,13 +154,13 @@ def selecionar_personagem(screen):
 
     return selected[0], selected[1]
 
-def selecionar_personagem_campanha(screen):
+def select_ampaign_character(screen):
     warrior_img = pygame.image.load("assets/imagens/warrior/sprites/warrior.png").convert_alpha()
     wizard_img = pygame.image.load("assets/imagens/wizard/sprites/wizard.png").convert_alpha()
     warrior_frame = pygame.transform.scale(warrior_img.subsurface((0, 0, 80, 180)), (60, 120))
     wizard_frame = pygame.transform.scale(wizard_img.subsurface((0, 0, 80, 180)), (60, 120))
 
-    nomes = ["Guerreiro", "Mago"]
+    names = ["Guerreiro", "Mago"]
     sprites = [warrior_frame, wizard_frame]
     ids = ["warrior", "wizard"]
 
@@ -185,8 +185,8 @@ def selecionar_personagem_campanha(screen):
         bar_height = 110
         bar_x = (SCREEN_WIDTH - bar_width) // 2
         bar_y = SCREEN_HEIGHT // 2 - 40
-        spacing = bar_width // len(nomes)
-        for i, nome in enumerate(nomes):
+        spacing = bar_width // len(names)
+        for i, nome in enumerate(names):
             rect = pygame.Rect(bar_x + i*spacing + 10, bar_y + 10, spacing-20, bar_height-20)
             pygame.draw.rect(screen, (255, 0, 0) if current == i else (80, 80, 80), rect, 3, border_radius=10)
             if sprites[i]:
@@ -216,9 +216,9 @@ def selecionar_personagem_campanha(screen):
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
-                    current = (current - 1) % len(nomes)
+                    current = (current - 1) % len(names)
                 elif event.key == pygame.K_d:
-                    current = (current + 1) % len(nomes)
+                    current = (current + 1) % len(names)
                 elif event.key == pygame.K_w:
                     selected = ids[current]
             elif event.type == pygame.MOUSEBUTTONDOWN:

@@ -10,9 +10,9 @@ from opcoes_menu import show_opcoes_menu
 def show_pause_menu(screen, stop_event=None, input_thread1=None, input_thread2=None, volume=1.0):
     clock = pygame.time.Clock()
     continue_btn = Button("Continuar", SCREEN_WIDTH//2 - 120, 230, 240, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
-    opcoes_btn = Button("Opcoes", SCREEN_WIDTH//2 - 120, 310, 240, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
+    options_btn = Button("Opcoes", SCREEN_WIDTH//2 - 120, 310, 240, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
     menu_btn = Button("Menu Principal", SCREEN_WIDTH//2 - 160, 390, 320, 60, BLUE, LIGHT_BLUE, DARK_BLUE)  # Botão maior!
-    buttons = [continue_btn, opcoes_btn, menu_btn]
+    buttons = [continue_btn, options_btn, menu_btn]
 
     while True:
         screen.fill(GRAY)
@@ -45,7 +45,7 @@ def show_pause_menu(screen, stop_event=None, input_thread1=None, input_thread2=N
                     if btn.pressed and btn.hovered:
                         if btn == continue_btn:
                             return "continue", volume
-                        elif btn == opcoes_btn:
+                        elif btn == options_btn:
                             volume = show_opcoes_menu(screen, volume)
                         elif btn == menu_btn:
                             return "menu"  # Agora retorna so menu

@@ -23,10 +23,10 @@ def show_controls(screen):
             line = HUD_FONT.render(txt, True, WHITE)
             screen.blit(line, (SCREEN_WIDTH//2 - line.get_width()//2, 180 + i*40))
 
-        voltar_btn = Button("Voltar", SCREEN_WIDTH//2 - 100, 400, 200, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
+        back_btn = Button("Voltar", SCREEN_WIDTH//2 - 100, 400, 200, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
         mouse = pygame.mouse.get_pos()
-        voltar_btn.check_hover(mouse)
-        voltar_btn.draw(screen)
+        back_btn.check_hover(mouse)
+        back_btn.draw(screen)
 
         pygame.display.flip()
         for event in pygame.event.get():
@@ -34,7 +34,7 @@ def show_controls(screen):
                 pygame.quit()
                 exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if voltar_btn.hovered:
+                if back_btn.hovered:
                     running = False
         clock.tick(60)
 
@@ -46,8 +46,8 @@ def show_opcoes_menu(screen, volume):
     bar_x, bar_y, bar_w, bar_h = SCREEN_WIDTH//2 - 150, 220, 300, 16
     handle_radius = 18
 
-    controles_btn = Button("Controles", SCREEN_WIDTH//2 - 100, 300, 200, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
-    voltar_btn = Button("Voltar", SCREEN_WIDTH//2 - 100, 380, 200, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
+    control_btn = Button("Controles", SCREEN_WIDTH//2 - 100, 300, 200, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
+    back_btn = Button("Voltar", SCREEN_WIDTH//2 - 100, 380, 200, 60, BLUE, LIGHT_BLUE, DARK_BLUE)
 
     while running:
         screen.fill(GRAY)
@@ -66,10 +66,10 @@ def show_opcoes_menu(screen, volume):
 
         # Botões
         mouse = pygame.mouse.get_pos()
-        controles_btn.check_hover(mouse)
-        voltar_btn.check_hover(mouse)
-        controles_btn.draw(screen)
-        voltar_btn.draw(screen)
+        control_btn.check_hover(mouse)
+        back_btn.check_hover(mouse)
+        control_btn.draw(screen)
+        back_btn.draw(screen)
 
         pygame.display.flip()
         for event in pygame.event.get():
@@ -80,9 +80,9 @@ def show_opcoes_menu(screen, volume):
                 if (handle_x-handle_radius <= mouse[0] <= handle_x+handle_radius and
                     bar_y-handle_radius <= mouse[1] <= bar_y+bar_h+handle_radius):
                     dragging = True
-                elif controles_btn.hovered:
+                elif control_btn.hovered:
                     show_controls(screen)
-                elif voltar_btn.hovered:
+                elif back_btn.hovered:
                     running = False
             elif event.type == pygame.MOUSEBUTTONUP:
                 dragging = False
