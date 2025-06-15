@@ -51,7 +51,7 @@ def show_opcoes_menu(screen, volume):
 
     while running:
         screen.fill(GRAY)
-        title = TITLE_FONT.render("Opções", True, WHITE)
+        title = TITLE_FONT.render("Opcoes", True, WHITE)
         screen.blit(title, title.get_rect(center=(SCREEN_WIDTH // 2, 100)))
 
         # Barra de volume

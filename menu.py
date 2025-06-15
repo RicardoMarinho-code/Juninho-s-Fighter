@@ -29,7 +29,7 @@ def show_menu(screen, volume=1.0):
     sair_y = opcoes_y + button_height + spacing
 
     jogar_btn = Button("Jogar", SCREEN_WIDTH//2 - button_width//2, jogar_y, button_width, button_height, BLUE, LIGHT_BLUE, DARK_BLUE)
-    opcoes_btn = Button("Opções", SCREEN_WIDTH//2 - button_width//2, opcoes_y, button_width, button_height, BLUE, LIGHT_BLUE, DARK_BLUE)
+    opcoes_btn = Button("Opcoes", SCREEN_WIDTH//2 - button_width//2, opcoes_y, button_width, button_height, BLUE, LIGHT_BLUE, DARK_BLUE)
     sair_btn = Button("Sair", SCREEN_WIDTH//2 - button_width//2, sair_y, button_width, button_height, BLUE, LIGHT_BLUE, DARK_BLUE)
     buttons = {
         "jogar": jogar_btn,
