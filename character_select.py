@@ -19,11 +19,15 @@ def select_character(screen):
     # Load images
     warrior_img = pygame.image.load("assets/imagens/imgs_escolha/warrior_escolha.png").convert_alpha()
     wizard_img = pygame.image.load("assets/imagens/imgs_escolha/mage_escolha.png").convert_alpha()
+    king_img = pygame.image.load("assets/imagens/imgs_escolha/mage_escolha.png").convert_alpha()
+    yasuke_img = pygame.image.load("assets/imagens/imgs_escolha/mage_escolha.png").convert_alpha()
     warrior_frame = pygame.transform.smoothscale(warrior_img, (rect_width, rect_height))
     wizard_frame = pygame.transform.smoothscale(wizard_img, (rect_width, rect_height))
+    king_frame = pygame.transform.smoothscale(wizard_img, (rect_width, rect_height))
+    yasuke_frame = pygame.transform.smoothscale(wizard_img, (rect_width, rect_height))
 
-    names = ["Guerreiro", "Mago", "???", "???", "???"]
-    sprites = [warrior_frame, wizard_frame, None, None, None]
+    names = ["Guerreiro", "Mago", "King", "Samurai", "???"]
+    sprites = [warrior_frame, wizard_frame, king_frame, yasuke_frame, None]
     ids = ["warrior", "wizard", None, None, None]
 
     title_font = TITLE_FONT

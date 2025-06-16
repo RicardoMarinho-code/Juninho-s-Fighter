@@ -37,6 +37,7 @@ class Game:
         # Quantidade de frames de cada animação
         self.WARRIOR_ANIM = [10, 8, 1, 7, 7, 3, 7]
         self.WIZARD_ANIM = [8, 8, 1, 8, 8, 3, 7]
+        
 
         self.p1_name = p1
         self.p2_name = p2

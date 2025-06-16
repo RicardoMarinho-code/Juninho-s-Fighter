@@ -20,14 +20,12 @@ class InputThread(threading.Thread):
                     self.command_dict['left'] = key[pygame.K_a]
                     self.command_dict['right'] = key[pygame.K_d]
                     self.command_dict['jump'] = key[pygame.K_w]
-                    self.command_dict['block'] = key[pygame.K_e]
                     self.command_dict['attack1'] = key[pygame.K_r]
                     self.command_dict['attack2'] = key[pygame.K_t]
                 elif self.player == 2:
                     self.command_dict['left'] = key[pygame.K_b]
                     self.command_dict['right'] = key[pygame.K_m]
                     self.command_dict['jump'] = key[pygame.K_SPACE]
-                    self.command_dict['block'] = key[pygame.K_l]
                     self.command_dict['attack1'] = key[pygame.K_o]
                     self.command_dict['attack2'] = key[pygame.K_p]
             time.sleep(0.01)  # Pequeno delay para evitar uso excessivo de CPU

@@ -82,4 +82,3 @@ def show_menu(screen, volume=1.0):
 
         pygame.display.flip()
         clock.tick(60)
-
