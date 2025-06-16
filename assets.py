@@ -26,8 +26,8 @@ def load_assets(selected_map):
         assets['victory_img'] = pygame.image.load("assets/imagens/icons/victory.png").convert_alpha()
         assets['warrior_sheet'] = pygame.image.load("assets/imagens/warrior/sprites/warrior.png").convert_alpha()
         assets['wizard_sheet'] = pygame.image.load("assets/imagens/wizard/sprites/wizard.png").convert_alpha()
-        assets['yasuke_sheet'] = pygame.image.load("assets/imagens/king_yang/Sprites/king.png").convert_alpha()
-        assets['king_sheet'] = pygame.image.load("assets/imagens/Yasuke Samurai/Sprites/yasuke.png").convert_alpha()
+        assets['samurai_sheet'] = pygame.image.load("assets/imagens/Yasuke Samurai/Sprites/samurai.png").convert_alpha()
+        assets['king_sheet'] = pygame.image.load("assets/imagens/king_yang/Sprites/yang.png").convert_alpha()
 
         # Carrega fontes com tamanho 80
         count_font = pygame.font.Font("assets/font/turok.ttf", 80)
@@ -39,6 +39,8 @@ def load_assets(selected_map):
             "victory_img": assets['victory_img'],
             "warrior_sheet": assets['warrior_sheet'],
             "wizard_sheet": assets['wizard_sheet'],
+            "king_sheet": assets['king_sheet'],
+            "samurai_sheet": assets['samurai_sheet'],
             "sword_fx": sword_fx,
             "magic_fx": magic_fx,
             "count_font": count_font,

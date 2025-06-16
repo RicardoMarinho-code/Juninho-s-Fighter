@@ -34,19 +34,32 @@ class Game:
         # Dados dos personagens (tamanho, escala, offset)
         self.WARRIOR_DATA = [162, 4, [72, 56]]
         self.WIZARD_DATA = [250, 3, [112, 107]]
+        self.KING_DATA = [182.857142, 3, [100, 60]]
+        self.YASUKE_DATA = [200, 3, [100, 60]]
         # Quantidade de frames de cada animação
         self.WARRIOR_ANIM = [10, 8, 1, 7, 7, 3, 7]
         self.WIZARD_ANIM = [8, 8, 1, 8, 8, 3, 7]
+        self.KING_ANIM = [8, 8, 2, 4, 4, 4, 6]
+        self.YASUKE_ANIM = [8, 8, 2, 6, 6, 4, 6]
         
 
         self.p1_name = p1
         self.p2_name = p2
         self.modo = modo
         self.create_fighter = lambda player, char_name, x, y, flip: (
-            Fighter(player, x, y, flip, self.WARRIOR_DATA, assets['warrior_sheet'], self.WARRIOR_ANIM, assets['sword_fx'])
-            if char_name == "warrior" else
-            Fighter(player, x, y, flip, self.WIZARD_DATA, assets['wizard_sheet'], self.WIZARD_ANIM, assets['magic_fx'])
+            Fighter(player, x, y, flip, 
+                self.WARRIOR_DATA if char_name == "warrior" else 
+                self.WIZARD_DATA if char_name == "wizard" else 
+                self.KING_DATA if char_name == "king" else 
+                self.YASUKE_DATA, 
+                assets[char_name + '_sheet'], 
+                self.WARRIOR_ANIM if char_name == "warrior" else 
+                self.WIZARD_ANIM if char_name == "wizard" else 
+                self.KING_ANIM if char_name == "king" else 
+                self.YASUKE_ANIM, 
+                assets["sword_fx"])
         )
+        
 
         # P1 sempre à esquerda, P2 à direita
         self.player_1 = self.create_fighter(1, self.p1_name, 200, 380, False)
